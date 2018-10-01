@@ -31,6 +31,7 @@
 </template>
 <script>
     import bus from '../common/bus';
+    import { apiUserLoginOut } from '@/service';
     export default {
         data() {
             return {
@@ -53,7 +54,15 @@
             handleCommand(command) {
                 if(command == 'loginout'){
                     localStorage.removeItem('ms_username')
-                    this.$router.push('/login');
+                    apiUserLoginOut()
+                    .then((res)=>{
+                        if(res.code == 200){
+                            this.$message.success('退出登录成功');
+                            this.$router.push('/login');
+                        }else{
+                            this.$message.error('退出登录失败');
+                        }
+                    })
                 }
             },
             // 侧边栏折叠

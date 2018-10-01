@@ -8,8 +8,16 @@
         </div>
         <div class="container">
             <div class="handle-box">
+               <el-select v-model="status" placeholder="请选择">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+              </el-select>
               <el-input v-model="searchName" placeholder="请输入姓名" style="width:200px;"></el-input>
-              <el-input v-model="searchName" placeholder="请输入手机号" style="width:200px;"></el-input>
+              <el-input v-model="searchMobile" placeholder="请输入手机号" style="width:200px;"></el-input>
               <el-button type="primary" plain>搜索</el-button>
               <el-button type="primary" plain>导出</el-button>
             </div>
@@ -18,15 +26,12 @@
             </div>
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="created_at" label="订单日期" sortable></el-table-column>
-                <el-table-column prop="order" label="订单编号"></el-table-column>
+                <el-table-column prop="order_no" label="订单编号"></el-table-column>
                 <el-table-column prop="room_no" label="借款人"></el-table-column>
-                <el-table-column prop="order_no" label="信用额度"></el-table-column>
-                <el-table-column prop="total" label="借款金额"></el-table-column>
-                <el-table-column prop="productName" label="放款金额"></el-table-column>
+                <el-table-column prop="loan_amount" label="借款金额"></el-table-column>
+                <el-table-column prop="into_amount" label="放款金额"></el-table-column>
                 <el-table-column prop="productPrice" label="借款手续费"></el-table-column>
-                <el-table-column prop="productPrice" label="借款周期"></el-table-column>
-                <el-table-column prop="remark" label="申请周期"></el-table-column>
-                <el-table-column prop="remark" label="放款日期"></el-table-column>
+                <el-table-column prop="repaymen_at" label="该还款日期"></el-table-column>
                 <el-table-column prop="remark" label="还款次数"></el-table-column>
                 <el-table-column prop="remark" label="状态"></el-table-column>
                  <el-table-column label="操作" width="200">
@@ -125,15 +130,29 @@
     export default {
         data() {
             return {
-                typeList: [{
-                    label: '美食订单',
-                    id: 1
-                },{
-                    label: '服务订单',
-                    id: 2
-                }],
                 dialogUpdate: false,
+                status: '',
+                options: [{
+                    id: '',
+                    name: '全部'
+                },{
+                    id: 0,
+                    name: '待审核'
+                },{
+                    id: 1,
+                    name: '审核通过待放款'
+                },{
+                    id: 2,
+                    name: '审核不通过'
+                },{
+                    id: 3,
+                    name: '已放款'
+                },{
+                   id: 4,
+                   name: '已还款' 
+                }],
                 searchName: '',
+                searchMobile: '',
                 typeId: 1,
                 tableData: [{
                   created_at: '2018-10-03'
@@ -151,7 +170,7 @@
             }
         },
         created() {
-            //this.getData();
+            this.getData();
         },
         computed: {
 
@@ -163,19 +182,23 @@
                 this.getData();
             },
             getData() {
-                apiOrderList({
-                    type: this.typeId,
-                    page: this.cur_page
-                })
+                const data = {
+                  size: this.pageSize,
+                  page: this.cur_page 
+                }
+                if(this.searchName){
+                    data.name = this.searchName
+                }
+                if(this.searchMobile){
+                    data.mobile = this.searchMobile
+                }
+                if(this.status != ''){
+                    data.status = this.status
+                }
+                apiOrderList(data)
                 .then((res) => {
                     console.log('res-order',res.data)
                     this.tableData = res.data.list
-                    this.tableData.forEach(function(item){
-                        item.type = item.type == 1?'美食订单':'服务订单'
-                        item.productName = item.detail[0].name
-                        item.productPrice = item.detail[0].price
-                        item.productAmount = item.detail[0].amount
-                    })
                     this.total = res.data.total
                 })
             },

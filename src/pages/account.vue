@@ -8,16 +8,24 @@
         </div>
         <div class="container">
             <div class="handle-box">
+              <el-select v-model="status" placeholder="请选择">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+              </el-select>
               <el-input v-model="searchName" placeholder="请输入姓名" style="width:200px;"></el-input>
-              <el-input v-model="searchName" placeholder="请输入手机号" style="width:200px;"></el-input>
+              <el-input v-model="searchMobile" placeholder="请输入手机号" style="width:200px;"></el-input>
               <el-button type="primary" plain>搜索</el-button>
               <el-button type="primary" plain>导出</el-button>
             </div>
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
-                <el-table-column prop="name" label="用户id"></el-table-column>
+                <el-table-column prop="id" label="用户id"></el-table-column>
                 <el-table-column prop="name" label="姓名"></el-table-column>
-                <el-table-column prop="name" label="手机号码"></el-table-column>
-                <el-table-column prop="name" label="实名认证"></el-table-column>
+                <el-table-column prop="phone" label="手机号码"></el-table-column>
+                <el-table-column prop="name" label="身份证认证"></el-table-column>
                 <el-table-column prop="name" label="运营商认证"></el-table-column>
                 <el-table-column prop="name" label="通讯录认证"></el-table-column>
                 <el-table-column prop="name" label="支付宝认证"></el-table-column>
@@ -62,7 +70,7 @@
 </template>
 
 <script>
-    import { apiAddCookbook,apiCookbookList,apiCookbookDelete,apiCookbookSave } from '@/service'
+    import { apiUserList } from '@/service'
     export default {
         data() {
             return {
@@ -70,6 +78,22 @@
                 tableData: [{
                   name: 'aaa'
                 }],
+                options: [{
+                    id: '',
+                    name: '全部'
+                },{
+                    id: 0,
+                    name: '未认证'
+                },{
+                    id: 1,
+                    name: '已完成认证'
+                },{
+                    id: 2,
+                    name: '审核不通过'
+                }],
+                status: '',
+                searchName: '',
+                searchMobile: '',
                 cur_page: 1,
                 pageSize: 10,
                 total: 0,
@@ -112,10 +136,22 @@
               window.open(url)
             },
             getData() {
-                apiCookbookList({
-                  page: this.cur_page
-                })
+                const data = {
+                  size: this.pageSize,
+                  page: this.cur_page 
+                }
+                if(this.searchName){
+                    data.name = this.searchName
+                }
+                if(this.searchMobile){
+                    data.mobile = this.searchMobile
+                }
+                if(this.status !=''){
+                    data.status = this.status
+                }
+                apiUserList(data)
                 .then((res) => {
+                    console.log('res-order',res.data)
                     this.tableData = res.data.list
                     this.total = res.data.total
                 })

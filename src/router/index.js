@@ -31,38 +31,10 @@ export default new Router({
                     meta: { title: '订单详情' }
                 },
                 {
-                    path: '/fee',
-                    component: resolve => require(['../pages/fee.vue'], resolve),
-                    meta: { title: '降重收费' }
-                },
-                {
-                    path: '/editor',
-                    component: resolve => require(['../pages/editor.vue'], resolve),
-                    meta: { title: '酒店详情' }
-                },
-                {
                     // 用户审核
                     path: '/account',
                     component: resolve => require(['../pages/account.vue'], resolve),
                     meta: { title: '用户审核' }
-                },
-                {
-                    // 充值订单
-                    path: '/recharge',
-                    component: resolve => require(['../pages/recharge.vue'], resolve),
-                    meta: { title: '充值订单' }
-                },
-                {
-                    // 人工查重
-                    path: '/check',
-                    component: resolve => require(['../pages/check.vue'], resolve),
-                    meta: { title: '人工查重' }
-                },
-                {
-                    //检测类型
-                    path: '/type',
-                    component: resolve => require(['../pages/type.vue'], resolve),
-                    meta: { title: '检测类型' }
                 }
             ]
         },
