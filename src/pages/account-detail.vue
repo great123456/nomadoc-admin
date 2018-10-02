@@ -26,9 +26,21 @@
             <p class="title">身份证信息</p>
             <el-table :data="card" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="created_at" label="日期" sortable></el-table-column>
-                <el-table-column prop="front" label="身份证正面"></el-table-column>
-                <el-table-column prop="back" label="身份证反面"></el-table-column>
-                <el-table-column prop="people" label="人身照"></el-table-column>
+                <el-table-column label="身份证正面">
+                  <template slot-scope="props">
+                    <img :src="props.row.front" alt="" style="width:100px;height:auto;cursor:pointer;" @click="checkImage(props.row.front)">
+                  </template>
+                </el-table-column>
+                <el-table-column label="身份证反面">
+                  <template slot-scope="props">
+                    <img :src="props.row.back" alt="" style="width:100px;height:auto;cursor:pointer;" @click="checkImage(props.row.back)">
+                  </template>
+                </el-table-column>
+                <el-table-column label="人身照">
+                  <template slot-scope="props">
+                    <img :src="props.row.people" alt="" style="width:100px;height:auto;cursor:pointer;" @click="checkImage(props.row.people)">
+                  </template>
+                </el-table-column>
             </el-table>
             <p class="title">运营商数据</p>
             <el-table :data="mobile" border style="width: 100%" ref="multipleTable">
@@ -70,12 +82,21 @@
                 examine: []
             }
         },
-        mounted(){
-           this.getAccountDetail()
+        watch:{
+            $route(newValue, oldValue){
+                console.log('newValue',newValue)
+                if(newValue.path == '/account-detail'){
+                  this.id = newValue.query.id
+                  this.getAccountDetail()
+                }
+            }
         },
         methods: {
             returnPage(){
                this.$router.go(-1)
+            },
+            checkImage(url){
+              window.open(url)
             },
             getAccountDetail(){
               this.basic = []
@@ -97,9 +118,9 @@
                 }
                 this.basic.push(basic)
                 this.bank.push(detail.bank_card)
-                detail.id_card.front = 'http://wallet.hxgtech.com'+detail.id_card.front
-                detail.id_card.back = 'http://wallet.hxgtech.com'+detail.id_card.back
-                detail.id_card.people = 'http://wallet.hxgtech.com'+detail.id_card.people
+                detail.id_card.front = 'https://walletapi.hxgtech.com'+detail.id_card.front
+                detail.id_card.back = 'https://walletapi.hxgtech.com'+detail.id_card.back
+                detail.id_card.people = 'https://walletapi.hxgtech.com'+detail.id_card.people
                 this.card.push(detail.id_card)
                 this.mobile.push(detail.mobile_carrier)
                 this.contacts = detail.phone_list

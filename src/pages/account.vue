@@ -76,7 +76,6 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="danger" @click="checkAccount(2)">不通过</el-button>
-                <el-button type="info" @click="checkAccount(0)">未认证</el-button>
                 <el-button type="primary" @click="checkAccount(1)">通过</el-button>
             </span>
         </el-dialog>
@@ -201,7 +200,7 @@
                 data.quota = this.form.quota
                 data.rate = this.form.rate
               }
-              if(status == 2 || status == 0){
+              if(status == 2){
                 if(this.form.remark == ''){
                   this.$message.error('审核不通过需填写返回app意见再提交')
                   return
@@ -217,7 +216,8 @@
               .then((res)=>{
                 console.log('check',res)
                 if(res.code == 200){
-
+                   this.$message.success('操作成功')
+                   this.dialogUpdate = false
                 }else{
                   this.$message.error(res.message)
                 }
