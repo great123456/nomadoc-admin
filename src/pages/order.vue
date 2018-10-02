@@ -16,9 +16,9 @@
                     :value="item.id">
                   </el-option>
               </el-select>
-              <el-input v-model="searchName" placeholder="请输入姓名" style="width:200px;"></el-input>
-              <el-input v-model="searchMobile" placeholder="请输入手机号" style="width:200px;"></el-input>
-              <el-button type="primary" plain>搜索</el-button>
+              <el-input v-model="searchName" clearable placeholder="请输入姓名" style="width:200px;"></el-input>
+              <el-input v-model="searchMobile" clearable placeholder="请输入手机号" style="width:200px;"></el-input>
+              <el-button type="primary" plain @click="serarchPage">搜索</el-button>
               <el-button type="primary" plain>导出</el-button>
             </div>
             <div style="margin-bottom:20px;">
@@ -27,19 +27,28 @@
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="created_at" label="订单日期" sortable></el-table-column>
                 <el-table-column prop="order_no" label="订单编号"></el-table-column>
-                <el-table-column prop="room_no" label="借款人"></el-table-column>
+                <el-table-column prop="customer.name" label="借款人"></el-table-column>
+                <el-table-column prop="customer.phone" label="手机号"></el-table-column>
                 <el-table-column prop="loan_amount" label="借款金额"></el-table-column>
                 <el-table-column prop="into_amount" label="放款金额"></el-table-column>
                 <el-table-column prop="rate" label="费率"></el-table-column>
                 <el-table-column prop="repaymen_at" label="该还款日期"></el-table-column>
-                <el-table-column prop="remark" label="还款次数"></el-table-column>
-                <el-table-column prop="remark" label="状态"></el-table-column>
+                <el-table-column prop="return_at" label="实际还款时间"></el-table-column>
+                <el-table-column prop="state" label="审核状态"></el-table-column>
                  <el-table-column label="操作" width="200">
                    <template slot-scope="scope">
                       <el-button
                         size="mini"
                         type="primary"
-                        @click="checkInfo(scope.row)">审核</el-button>
+                        @click="checkInfo(scope.row)" v-show="status == 0|| status == 2">审核</el-button>
+                        <el-button
+                        size="mini"
+                        type="primary"
+                        @click="setUserState(scope.row,3)" v-show="status == 1">放款</el-button>
+                        <el-button
+                        size="mini"
+                        type="primary"
+                        @click="setUserState(scope.row,4)" v-show="status == 3">还款</el-button>
                       <el-button
                         size="mini"
                         type="primary"
@@ -55,13 +64,16 @@
         
 
          <!-- 审核信息 -->
-        <el-dialog title="审核订单" :visible.sync="dialogUpdate" width="600px">
-            <el-form ref="form" :inline="true" :model="form" label-width="90px">
-                
+        <el-dialog title="审核订单" :visible.sync="dialogUpdate" width="500px">
+            <el-form ref="form" :model="form" label-width="120px">
+                <el-form-item label="审核不通过说明">
+                    <el-input v-model="form.remark" type="textarea"></el-input>
+                    <p>(审核不通过时填写)</p>
+                </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button type="danger">审核不通过</el-button>
-                <el-button type="primary">审核通过</el-button>
+                <el-button type="danger" size="mini" @click="checkOrder(2)">审核不通过</el-button>
+                <el-button type="primary" size="mini" @click="checkOrder(1)">审核通过</el-button>
             </span>
         </el-dialog>
 
@@ -69,7 +81,7 @@
 </template>
 
 <script>
-    import { apiOrderList } from '@/service'
+    import { apiOrderList,apiOrderCheck } from '@/service'
     export default {
         data() {
             return {
@@ -107,9 +119,9 @@
                 select_word: '',
                 is_search: false,
                 form: {
-                  name: '',
-                  account: ''
-                }
+                  remark: ''
+                },
+                updateId: ''
             }
         },
         created() {
@@ -123,6 +135,9 @@
             handleCurrentChange(val) {
                 this.cur_page = val;
                 this.getData();
+            },
+            serarchPage(){
+              this.getData()
             },
             getData() {
                 const data = {
@@ -140,17 +155,92 @@
                 }
                 apiOrderList(data)
                 .then((res) => {
-                    console.log('res-order',res.data)
                     this.tableData = res.data.list
+                    this.tableData.forEach(function(item){
+                      switch (item.status) {
+                          case 0:
+                              item.state = '待审核';
+                              break;
+                          case 1:
+                              item.state = '审核通过待放款';
+                              break;
+                          case 2:
+                              item.state = '审核不通过';
+                              break;
+                          case 3:
+                              item.state = '已放款';
+                              break;
+                          default:
+                              item.state = '已还款';
+                              break;
+                      }
+                    })
+                    console.log('res-order',this.tableData)
                     this.total = res.data.total
                 })
             },
-            checkInfo(){
+            setUserState(row,type){
+               this.updateId = row.id
+               if(type == 3){
+                 this.$confirm('确认已经放款给用户?', '提示', {
+                           confirmButtonText: '确定',
+                           cancelButtonText: '取消',
+                           type: 'warning'
+                         }).then(() => {
+                           this.checkOrder(3)
+                         }).catch(() => {
+                           this.$message({
+                             type: 'info',
+                             message: '已取消操作'
+                           });          
+                         });
+               }
+               if(type == 4){
+                 this.$confirm('确认用户已经完成还款?', '提示', {
+                           confirmButtonText: '确定',
+                           cancelButtonText: '取消',
+                           type: 'warning'
+                         }).then(() => {
+                           this.checkOrder(4)
+                         }).catch(() => {
+                           this.$message({
+                             type: 'info',
+                             message: '已取消操作'
+                           });          
+                         });
+               }
+            },
+            checkOrder(status){
+              let data = {
+                id: this.updateId,
+                status: status
+              }
+              if(status == 2){
+                if(this.form.remark == ''){
+                  this.$message.error('审核不通过需填写不通过意见信息')
+                  return
+                }
+                data.status_remark = this.form.remark
+              }
+              apiOrderCheck(data)
+              .then((res)=>{
+                console.log('check',res)
+                if(res.code == 200){
+                   this.$message.success('操作成功')
+                   this.dialogUpdate = false
+                }else{
+                  this.$message.error(res.message)
+                }
+              })
+            },
+            checkInfo(row){
+              console.log('row',row)
+              this.updateId = row.id
               this.dialogUpdate = true
             },
-            ordreDetailPage(){
+            ordreDetailPage(row){
                this.$router.push({
-                 path: 'detail'
+                 path: 'detail?id='+row.id
                })
             },
             selectType(){
@@ -158,14 +248,6 @@
             },
             search() {
                 this.is_search = true;
-            },
-            // 保存编辑
-            saveEdit() {
-
-            },
-            // 确定删除
-            deleteRow(){
-
             }
         }
     }

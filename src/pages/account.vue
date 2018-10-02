@@ -16,9 +16,9 @@
                     :value="item.id">
                   </el-option>
               </el-select>
-              <el-input v-model="searchName" placeholder="请输入姓名" style="width:200px;"></el-input>
-              <el-input v-model="searchMobile" placeholder="请输入手机号" style="width:200px;"></el-input>
-              <el-button type="primary" plain>搜索</el-button>
+              <el-input v-model="searchName" placeholder="请输入姓名" clearable style="width:200px;"></el-input>
+              <el-input v-model="searchMobile" placeholder="请输入手机号" clearable style="width:200px;"></el-input>
+              <el-button type="primary" plain @click="serarchPage">搜索</el-button>
               <el-button type="primary" plain>导出</el-button>
             </div>
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
@@ -139,6 +139,9 @@
             handleCurrentChange(val) {
                 this.cur_page = val;
                 this.getData();
+            },
+            serarchPage(){
+              this.getData()
             },
             getData() {
                 const data = {

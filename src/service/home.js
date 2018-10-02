@@ -25,3 +25,9 @@ export const apiAccountDetail = (obj) => fetch(API_PATH + '/customer/detail', ob
 
 //审核
 export const apiAccountCheck = (obj) => fetch(API_PATH + '/customer/auths', obj, 'POST')
+
+//用户信息（包含借款信息）
+export const apiOrderDetail = (obj) => fetch(API_PATH + '/loan/customer-detail', obj, 'GET')
+
+//审核（更改状态）
+export const apiOrderCheck = (obj) => fetch(API_PATH + '/loan/change-status', obj, 'POST')
