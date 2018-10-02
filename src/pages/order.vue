@@ -30,7 +30,7 @@
                 <el-table-column prop="room_no" label="借款人"></el-table-column>
                 <el-table-column prop="loan_amount" label="借款金额"></el-table-column>
                 <el-table-column prop="into_amount" label="放款金额"></el-table-column>
-                <el-table-column prop="productPrice" label="借款手续费"></el-table-column>
+                <el-table-column prop="rate" label="费率"></el-table-column>
                 <el-table-column prop="repaymen_at" label="该还款日期"></el-table-column>
                 <el-table-column prop="remark" label="还款次数"></el-table-column>
                 <el-table-column prop="remark" label="状态"></el-table-column>
@@ -57,64 +57,7 @@
          <!-- 审核信息 -->
         <el-dialog title="审核订单" :visible.sync="dialogUpdate" width="600px">
             <el-form ref="form" :inline="true" :model="form" label-width="90px">
-                <el-form-item label="姓名:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <el-form-item label="手机号:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <div style="width:100%;height:1px;backgroud:red:"></div>
-                <el-form-item label="身份证号:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <el-form-item label="芝麻分:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <el-form-item label="花呗额度:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <el-form-item label="开户行:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <el-form-item label="卡号:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <el-form-item label="实名认证:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <el-form-item label="运营商认证:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <el-form-item label="借款金额:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <el-form-item label="借款周期:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <el-form-item label="预期天数:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <el-form-item label="预期滞纳金:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <el-form-item label="放款时间:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <el-form-item label="还款期限:" style="width:250px;">
-                   <span>张三</span>
-                </el-form-item>
-                <el-form-item label="借款费率:">
-                   <el-select v-model="form.account">
-                        <el-option label="20%" value="0"></el-option>
-                        <el-option label="30%" value="1"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="借款额度:">
-                   <el-select v-model="form.account">
-                        <el-option label="3000" value="0"></el-option>
-                        <el-option label="5000" value="1"></el-option>
-                    </el-select>
-                </el-form-item>
+                
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="danger">审核不通过</el-button>

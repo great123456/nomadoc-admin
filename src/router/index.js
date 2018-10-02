@@ -35,6 +35,11 @@ export default new Router({
                     path: '/account',
                     component: resolve => require(['../pages/account.vue'], resolve),
                     meta: { title: '用户审核' }
+                },{
+                    // 客户详情
+                    path: '/account-detail',
+                    component: resolve => require(['../pages/account-detail.vue'], resolve),
+                    meta: { title: '客户详情' }
                 }
             ]
         },

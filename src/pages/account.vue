@@ -23,20 +23,25 @@
             </div>
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="id" label="用户id"></el-table-column>
+                <el-table-column prop="created_at" label="订单时间"></el-table-column>
                 <el-table-column prop="name" label="姓名"></el-table-column>
                 <el-table-column prop="phone" label="手机号码"></el-table-column>
-                <el-table-column prop="name" label="身份证认证"></el-table-column>
-                <el-table-column prop="name" label="运营商认证"></el-table-column>
-                <el-table-column prop="name" label="通讯录认证"></el-table-column>
-                <el-table-column prop="name" label="支付宝认证"></el-table-column>
-                <el-table-column prop="name" label="订单时间"></el-table-column>
-                <el-table-column prop="name" label="审核状态"></el-table-column>
-                <el-table-column label="操作">
+                <el-table-column prop="id_card_count" label="身份证认证"></el-table-column>
+                <el-table-column prop="mobile_carrier_count" label="运营商认证"></el-table-column>
+                <el-table-column prop="phone_list_count" label="通讯录认证"></el-table-column>
+                <el-table-column prop="ali_pay_count" label="支付宝认证"></el-table-column>
+                <el-table-column prop="is_auth" label="审核状态"></el-table-column>
+                <el-table-column label="操作" width="200">
                    <template slot-scope="scope">
                       <el-button
                          size="mini"
                          type="primary"
                          @click="handleEdit(scope.$index, scope.row)">审核</el-button>
+                      <el-button
+                      <el-button
+                         size="mini"
+                         type="primary"
+                         @click="accountDetailPage(scope.$index, scope.row)">查看</el-button>
                       <el-button
                     </template>
                 </el-table-column>
@@ -50,19 +55,29 @@
 
         <!-- 审核信息 -->
         <el-dialog title="审核信息" :visible.sync="dialogUpdate" width="500px">
-            <!-- <el-form ref="form" :model="form" label-width="80px">
-                <el-form-item label="账号名称">
-                    <el-input v-model="form.name"></el-input>
+            <el-form ref="form" :model="form" label-width="100px">
+                <el-form-item label="返回app意见">
+                    <el-input v-model="form.remark" type="textarea"></el-input>
+                    <p>(审核不通过时填写)</p>
+                </el-form-item>
+                <el-form-item label="后台意见">
+                    <el-input v-model="form.content" type="textarea"></el-input>
+                    <p>(审核不通过时填写)</p>
+                </el-form-item>
+                <el-form-item label="借款费率">
+                    <el-input-number v-model="form.rate" :min="1" :max="100" label="借款费率"></el-input-number>
+                    <p>(审核通过时填写)</p>
+                </el-form-item>
+                <el-form-item label="放款额度">
+                    <el-input v-model="form.quota" style="width:160px;"></el-input>
+                    <span style="margin-left:5px;">元</span>
+                    <p>(审核通过时填写)</p>
                 </el-form-item>
             </el-form>
-            <el-form ref="form" :model="form" label-width="80px">
-                <el-form-item label="账号密码">
-                    <el-input v-model="form.name"></el-input>
-                </el-form-item>
-            </el-form> -->
             <span slot="footer" class="dialog-footer">
-                <el-button type="danger">不通过</el-button>
-                <el-button type="primary" @click="updateCookBook">通过</el-button>
+                <el-button type="danger" @click="checkAccount(2)">不通过</el-button>
+                <el-button type="info" @click="checkAccount(0)">未认证</el-button>
+                <el-button type="primary" @click="checkAccount(1)">通过</el-button>
             </span>
         </el-dialog>
 
@@ -70,11 +85,10 @@
 </template>
 
 <script>
-    import { apiUserList } from '@/service'
+    import { apiUserList,apiAccountCheck } from '@/service'
     export default {
         data() {
             return {
-                fileList: [],
                 tableData: [{
                   name: 'aaa'
                 }],
@@ -103,10 +117,11 @@
                 editVisible: false,
                 dialogUpdate: false,
                 form: {
-                    name: '',
-                    address: ''
+                    remark: '',
+                    content: '',
+                    rate: 10,
+                    quota: ''
                 },
-                deleteId: '',
                 updateId: ''
             }
         },
@@ -126,15 +141,6 @@
                 this.cur_page = val;
                 this.getData();
             },
-            handleRemoveMain(file, fileList) {
-                this.fileList = fileList
-            },
-            handleChangeMain(file, fileList){
-              this.fileList = fileList
-            },
-            checkImage(url){
-              window.open(url)
-            },
             getData() {
                 const data = {
                   size: this.pageSize,
@@ -153,97 +159,73 @@
                 .then((res) => {
                     console.log('res-order',res.data)
                     this.tableData = res.data.list
+                    this.tableData.forEach(function(item){
+                      item.ali_pay_count = item.ali_pay_count>0?'已提交认证':'未提交认证'
+                      item.bank_card_count = item.bank_card_count>0?'已提交认证':'未提交认证'
+                      item.id_card_count = item.id_card_count>0?'已提交认证':'未提交认证'
+                      item.mobile_carrier_count = item.mobile_carrier_count>0?'已提交认证':'未提交认证'
+                      item.phone_list_count = item.phone_list_count>0?'已提交认证':'未提交认证'
+                      switch (item.is_auth) {
+                        case 0:
+                          item.is_auth = '未认证';
+                          break;
+                        case 1:
+                          item.is_auth = '已完成认证';
+                          break;
+                        default:
+                          item.is_auth = '审核不通过';
+                          break;
+                      }
+                    })
                     this.total = res.data.total
                 })
             },
-            addSchool(){
-              this.editVisible = true
-              this.form.name = ''
-              this.fileList = []
-            },
-            // 添加菜谱
-            saveEdit() {
-              if(this.form.name == ''){
-                this.$message.error('菜谱名称不能为空')
-                return
-              }
-              if(this.fileList.length == 0){
-                this.$message.error('菜谱图标未上传')
-                return
-              }
-              apiAddCookbook({
-                name: this.form.name,
-                img: this.fileList[0].response.data.url,
-                sort: 1
-              })
-              .then((res)=>{
-                if(res.code == 200){
-                  this.editVisible = false
-                  this.$message.success('添加成功')
-                  this.getData()
-                }else{
-                  this.$message.error(res.message)
-                }
-              })
-            },
             handleEdit(index,row){
               this.dialogUpdate = true
-              this.form.name = row.name
               this.updateId = row.id
-              this.fileList = []
             },
-            updateCookBook(){
-               if(this.form.name == ''){
-                 this.$message.error('菜谱名称不能为空')
-                 return
-               }
-               if(this.fileList.length == 0){
-                 this.$message.error('菜谱图标未上传')
-                 return
-               }
-               apiCookbookSave({
-                 id: this.updateId,
-                 name: this.form.name,
-                 img: this.fileList[0].response.data.url,
-                 sort: 1
-               })
-               .then((res)=>{
-                  if(res.code == 200){
-                    this.dialogUpdate = false
-                    this.$message.success('修改成功')
-                    this.getData()
-                  }else{
-                    this.$message.error(res.message)
-                  }
-               })
-            },
-            handleDelete(row){
-              this.deleteId = row.id
-              this.$confirm('确定删除当前菜谱?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        type: 'warning'
-                      }).then(() => {
-                        this.deleteRow()
-                      }).catch(() => {
-                        this.$message({
-                          type: 'info',
-                          message: '已取消删除'
-                        });          
-                      })
-            },
-            // 确定删除
-            deleteRow(){
-              apiCookbookDelete({
-                id: this.deleteId
-              })
+            checkAccount(status){
+              let data = {
+                customer_id: this.updateId,
+                status: status
+              }
+              if(status == 1){
+                if(this.form.quota == ''){
+                  this.$message.error('审核通过需填写额度信息再提交')
+                  return
+                }
+                if(this.form.rate == ''){
+                  return
+                  this.$message.error('审核通过需填写费率再提交')
+                }
+                data.quota = this.form.quota
+                data.rate = this.form.rate
+              }
+              if(status == 2 || status == 0){
+                if(this.form.remark == ''){
+                  this.$message.error('审核不通过需填写返回app意见再提交')
+                  return
+                }
+                if(this.form.content == ''){
+                  this.$message.error('审核不通过需填写后台意见再提交')
+                  return
+                }
+                data.front_remark = this.form.remark
+                data.back_remark = this.form.content
+              }
+              apiAccountCheck(data)
               .then((res)=>{
+                console.log('check',res)
                 if(res.code == 200){
-                  this.$message.success('删除成功')
-                  this.getData()
+
                 }else{
                   this.$message.error(res.message)
                 }
+              })
+            },
+            accountDetailPage(index,row){
+              this.$router.push({
+                path: 'account-detail?id='+row.id
               })
             }
         }

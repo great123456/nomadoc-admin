@@ -1,0 +1,122 @@
+<!-- 客户详情 -->
+<template>
+    <div>
+        <div class="crumbs">
+            <el-breadcrumb separator="/">
+                <el-breadcrumb-item><i class="el-icon-date"></i>订单详情</el-breadcrumb-item>
+            </el-breadcrumb>
+        </div>
+        <div class="container">
+            <p class="title">基础信息</p>
+            <el-table :data="basic" border style="width: 100%" ref="multipleTable">
+                <el-table-column prop="created_at" label="日期" sortable></el-table-column>
+                <el-table-column prop="name" label="用户名" sortable></el-table-column>
+                <el-table-column prop="phone" label="手机号"></el-table-column>
+                <el-table-column prop="is_auth" label="认证状态"></el-table-column>
+            </el-table>
+            <p class="title">银行卡数据</p>
+            <el-table :data="bank" border style="width: 100%" ref="multipleTable">
+                <el-table-column prop="created_at" label="日期" sortable></el-table-column>
+                <el-table-column prop="name" label="姓名"></el-table-column>
+                <el-table-column prop="id_card" label="身份证"></el-table-column>
+                <el-table-column prop="bank_card" label="银行卡号"></el-table-column>
+                <el-table-column prop="bank_name" label="银行名称"></el-table-column>
+                <el-table-column prop="mobile" label="电话"></el-table-column>
+            </el-table>
+            <p class="title">身份证信息</p>
+            <el-table :data="card" border style="width: 100%" ref="multipleTable">
+                <el-table-column prop="created_at" label="日期" sortable></el-table-column>
+                <el-table-column prop="front" label="身份证正面"></el-table-column>
+                <el-table-column prop="back" label="身份证反面"></el-table-column>
+                <el-table-column prop="people" label="人身照"></el-table-column>
+            </el-table>
+            <p class="title">运营商数据</p>
+            <el-table :data="mobile" border style="width: 100%" ref="multipleTable">
+                <el-table-column prop="created_at" label="日期" sortable></el-table-column>
+                <el-table-column prop="carrier" label="放款时间"></el-table-column>
+            </el-table>
+            <p class="title">通讯录数据</p>
+            <el-table :data="contacts" border style="width: 100%" ref="multipleTable">
+                <el-table-column prop="created_at" label="日期" sortable></el-table-column>
+                <el-table-column prop="name" label="姓名"></el-table-column>
+                <el-table-column prop="phone" label="电话"></el-table-column>
+            </el-table>
+            <p class="title">审核信息</p>
+            <el-table :data="examine" border style="width: 100%" ref="multipleTable">
+                <el-table-column prop="created_at" label="日期" sortable></el-table-column>
+                <el-table-column prop="front_remark" label="返回给 app 的意见"></el-table-column>
+                <el-table-column prop="back_remark" label="后台意见"></el-table-column>
+                <el-table-column prop="quota" label="额度"></el-table-column>
+                <el-table-column prop="rate" label="费率"></el-table-column>
+            </el-table>
+            <el-button class="editor-btn" type="primary" @click="returnPage">返回</el-button>
+        </div>
+    </div>
+</template>
+
+<script>
+    import {apiAccountDetail} from '@/service'
+    export default {
+        name: 'editor',
+        data: function(){
+            return {
+                content: '',
+                basic: [],
+                bank: [],
+                card: [],
+                mobile: [],
+                contacts: [],
+                id: this.$route.query.id||'',
+                examine: []
+            }
+        },
+        mounted(){
+           this.getAccountDetail()
+        },
+        methods: {
+            returnPage(){
+               this.$router.go(-1)
+            },
+            getAccountDetail(){
+              this.basic = []
+              this.bank = []
+              this.card = []
+              this.mobile = []
+              this.examine = []
+              apiAccountDetail({
+                customer_id: this.id
+              })
+              .then((res)=>{
+                console.log('detail',res)
+                let detail = res.data
+                let basic = {
+                  name: detail.name,
+                  phone: detail.phone,
+                  created_at: detail.created_at,
+                  is_auth: detail.is_auth
+                }
+                this.basic.push(basic)
+                this.bank.push(detail.bank_card)
+                detail.id_card.front = 'http://wallet.hxgtech.com'+detail.id_card.front
+                detail.id_card.back = 'http://wallet.hxgtech.com'+detail.id_card.back
+                detail.id_card.people = 'http://wallet.hxgtech.com'+detail.id_card.people
+                this.card.push(detail.id_card)
+                this.mobile.push(detail.mobile_carrier)
+                this.contacts = detail.phone_list
+                if(detail.examine){
+                    this.examine.push(detail.examine)
+                }
+              })
+            }
+        }
+    }
+</script>
+<style scoped>
+    .editor-btn{
+        margin-top: 10px;
+    }
+    .title{
+        margin-bottom: 20px;
+        margin-top: 20px;
+    }
+</style>

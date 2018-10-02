@@ -19,3 +19,9 @@ export const apiOrderList = (obj) => fetch(API_PATH + '/loan/list', obj, 'GET')
 
 //客户列表
 export const apiUserList = (obj) => fetch(API_PATH + '/customer/list', obj, 'GET')
+
+//客户详情
+export const apiAccountDetail = (obj) => fetch(API_PATH + '/customer/detail', obj, 'GET')
+
+//审核
+export const apiAccountCheck = (obj) => fetch(API_PATH + '/customer/auths', obj, 'POST')
