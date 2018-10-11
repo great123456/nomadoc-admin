@@ -39,7 +39,15 @@
                         icon: 'el-icon-goods',
                         index: 'account',
                         title: '用户审核'
-                    },
+                    },{
+                        icon: 'el-icon-bell',
+                        index: 'approve',
+                        title: '认证用户'
+                    },{
+                        icon: 'el-icon-bell',
+                        index: 'limit',
+                        title: '逾期订单'
+                    }
                     // {
                     //     icon: 'el-icon-bell',
                     //     index: 'check',

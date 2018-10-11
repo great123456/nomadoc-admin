@@ -40,15 +40,15 @@
                       <el-button
                         size="mini"
                         type="primary"
-                        @click="checkInfo(scope.row)" v-show="status == 0|| status == 2">审核</el-button>
+                        @click="checkInfo(scope.row)" v-show="scope.row.status == 0|| status == 2">审核</el-button>
                         <el-button
                         size="mini"
                         type="primary"
-                        @click="setUserState(scope.row,3)" v-show="status == 1">放款</el-button>
+                        @click="setUserState(scope.row,3)" v-show="scope.row.status == 1">放款</el-button>
                         <el-button
                         size="mini"
                         type="primary"
-                        @click="setUserState(scope.row,4)" v-show="status == 3">还款</el-button>
+                        @click="setUserState(scope.row,4)" v-show="scope.row.status == 3">还款</el-button>
                       <el-button
                         size="mini"
                         type="primary"
@@ -157,6 +157,7 @@
                 .then((res) => {
                     this.tableData = res.data.list
                     this.tableData.forEach(function(item){
+                      item.customer.name = item.customer.name?item.customer.name:item.customer.phone
                       switch (item.status) {
                           case 0:
                               item.state = '待审核';

@@ -114,7 +114,7 @@
                 console.log('detail',res)
                 let detail = res.data
                 let basic = {
-                  name: detail.name,
+                  name: detail.name?detail.name:detail.phone,
                   phone: detail.phone,
                   created_at: detail.created_at,
                   is_auth: detail.is_auth

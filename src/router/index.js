@@ -31,6 +31,15 @@ export default new Router({
                     meta: { title: '订单详情' }
                 },
                 {
+                    path: '/approve',
+                    component: resolve => require(['../pages/approve.vue'], resolve),
+                    meta: { title: '认证用户' }
+                },{
+                    path: '/limit',
+                    component: resolve => require(['../pages/limit.vue'], resolve),
+                    meta: { title: '逾期订单' }
+                },
+                {
                     // 用户审核
                     path: '/account',
                     component: resolve => require(['../pages/account.vue'], resolve),

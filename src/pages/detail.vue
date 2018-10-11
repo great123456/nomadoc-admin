@@ -44,7 +44,7 @@
             <p class="title">运营商数据</p>
             <el-table :data="mobile" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="created_at" label="日期" sortable></el-table-column>
-                <el-table-column prop="carrier" label="放款时间"></el-table-column>
+                <el-table-column prop="carrier" label="运营商"></el-table-column>
             </el-table>
             <p class="title">认证信息</p>
             <el-table :data="examine" border style="width: 100%" ref="multipleTable">
@@ -126,11 +126,11 @@
                 console.log('detail',res)
                 let detail = res.data
                 let basic = {
-                  name: detail.name,
+                  name: detail.name?detail.name:detail.phone,
                   phone: detail.phone,
                   id_card: detail.id_card,
                   created_at: detail.created_at,
-                  is_auth: detail.is_auth
+                  is_auth: detail.is_auth == 0?'未认证':'已认证'
                 }
                 this.basic.push(basic)
                 if(detail.bank_card){

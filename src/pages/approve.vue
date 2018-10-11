@@ -8,14 +8,6 @@
         </div>
         <div class="container">
             <div class="handle-box">
-              <el-select v-model="status" placeholder="请选择">
-                  <el-option
-                    v-for="item in options"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id">
-                  </el-option>
-              </el-select>
               <el-input v-model="searchName" placeholder="请输入姓名" clearable style="width:200px;"></el-input>
               <el-input v-model="searchMobile" placeholder="请输入手机号" clearable style="width:200px;"></el-input>
               <el-button type="primary" plain @click="serarchPage">搜索</el-button>
@@ -33,10 +25,10 @@
                 <el-table-column prop="is_auth" label="审核状态"></el-table-column>
                 <el-table-column label="操作" width="200">
                    <template slot-scope="scope">
-                      <el-button
+                      <!-- <el-button
                          size="mini"
                          type="primary"
-                         @click="handleEdit(scope.$index, scope.row)">审核</el-button>
+                         @click="handleEdit(scope.$index, scope.row)">审核</el-button> -->
                       <el-button
                       <el-button
                          size="mini"
@@ -56,12 +48,12 @@
         <!-- 审核信息 -->
         <el-dialog title="审核信息" :visible.sync="dialogUpdate" width="500px">
             <el-form ref="form" :model="form" label-width="100px">
-                <!-- <el-form-item label="返回app意见">
+                <el-form-item label="返回app意见">
                     <el-input v-model="form.remark" type="textarea"></el-input>
                     <p>(审核不通过时填写)</p>
-                </el-form-item> -->
-                <el-form-item label="不通过">
-                    <el-input v-model="form.content" type="textarea" placeholder="请填写不通过原因"></el-input>
+                </el-form-item>
+                <el-form-item label="后台意见">
+                    <el-input v-model="form.content" type="textarea"></el-input>
                     <p>(审核不通过时填写)</p>
                 </el-form-item>
                 <el-form-item label="借款费率">
@@ -91,20 +83,7 @@
                 tableData: [{
                   name: 'aaa'
                 }],
-                options: [{
-                    id: '',
-                    name: '全部'
-                },{
-                    id: 0,
-                    name: '未认证'
-                },{
-                    id: 1,
-                    name: '已完成认证'
-                },{
-                    id: 2,
-                    name: '审核不通过'
-                }],
-                status: '',
+                status: 1,
                 searchName: '',
                 searchMobile: '',
                 cur_page: 1,
@@ -116,7 +95,7 @@
                 editVisible: false,
                 dialogUpdate: false,
                 form: {
-                    remark: '审核不通过',
+                    remark: '',
                     content: '',
                     rate: 10,
                     quota: ''
