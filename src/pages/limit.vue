@@ -29,6 +29,9 @@
                    <template slot-scope="scope">
                       <el-button
                         size="mini"
+                        type="primary">还款</el-button>
+                      <el-button
+                        size="mini"
                         type="primary"
                         @click="ordreDetailPage(scope.row)">详情</el-button>
                     </template>
