@@ -73,7 +73,7 @@
             }
         },
         created() {
-            //this.getData();
+            this.getData();
         },
         computed: {
 
@@ -90,16 +90,14 @@
             getData() {
                 const data = {
                   size: this.pageSize,
-                  page: this.cur_page 
+                  page: this.cur_page,
+                  is_late: 1
                 }
                 if(this.searchName){
                     data.name = this.searchName
                 }
                 if(this.searchMobile){
                     data.mobile = this.searchMobile
-                }
-                if(this.status != ''){
-                    data.status = this.status
                 }
                 apiOrderList(data)
                 .then((res) => {

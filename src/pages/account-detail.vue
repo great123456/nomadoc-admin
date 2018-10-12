@@ -45,7 +45,7 @@
             <p class="title">运营商数据</p>
             <el-table :data="mobile" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="created_at" label="日期" sortable></el-table-column>
-                <el-table-column prop="carrier" label="放款时间"></el-table-column>
+                <el-table-column prop="carrier" label="运营商"></el-table-column>
             </el-table>
             <p class="title">认证信息</p>
             <el-table :data="examine" border style="width: 100%" ref="multipleTable">

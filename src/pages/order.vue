@@ -148,9 +148,9 @@
                     data.name = this.searchName
                 }
                 if(this.searchMobile){
-                    data.mobile = this.searchMobile
+                    data.phone = this.searchMobile
                 }
-                if(this.status != ''){
+                if(this.status !== ''){
                     data.status = this.status
                 }
                 apiOrderList(data)

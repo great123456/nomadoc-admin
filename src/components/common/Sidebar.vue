@@ -42,7 +42,7 @@
                     },{
                         icon: 'el-icon-bell',
                         index: 'approve',
-                        title: '认证用户'
+                        title: '审核通过'
                     },{
                         icon: 'el-icon-bell',
                         index: 'limit',
