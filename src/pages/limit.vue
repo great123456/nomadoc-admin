@@ -23,7 +23,7 @@
                 <el-table-column prop="rate" label="费率"></el-table-column>
                 <el-table-column prop="repaymen_at" label="该还款日期"></el-table-column>
                 <el-table-column prop="return_at" label="实际还款时间"></el-table-column>
-                <el-table-column prop="return_ata" label="逾期天数"></el-table-column>
+                <el-table-column prop="late_day" label="逾期天数"></el-table-column>
                 <el-table-column prop="return_at" label="逾期费用"></el-table-column>
                  <el-table-column label="操作" width="200">
                    <template slot-scope="scope">
