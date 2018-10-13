@@ -19,7 +19,7 @@
               <el-input v-model="searchName" clearable placeholder="请输入姓名" style="width:200px;"></el-input>
               <el-input v-model="searchMobile" clearable placeholder="请输入手机号" style="width:200px;"></el-input>
               <el-button type="primary" plain @click="serarchPage">搜索</el-button>
-              <el-button type="primary" plain>导出</el-button>
+              <!-- <el-button type="primary" plain>导出</el-button> -->
             </div>
             <div style="margin-bottom:20px;">
                 <span>借款总计:</span>

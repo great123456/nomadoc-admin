@@ -46,6 +46,14 @@
                 <el-table-column prop="created_at" label="日期" sortable></el-table-column>
                 <el-table-column prop="carrier" label="运营商"></el-table-column>
             </el-table>
+            <p class="title">支付宝信息</p>
+            <el-table :data="ali_pay" border style="width: 100%">
+                <el-table-column prop="created_at" label="日期" sortable></el-table-column>
+                <el-table-column prop="nickname" label="昵称"></el-table-column>
+                <el-table-column prop="account" label="账号"></el-table-column>
+                <el-table-column prop="score" label="芝麻分"></el-table-column>
+                <el-table-column prop="limit" label="花呗额度"></el-table-column>
+            </el-table>
             <p class="title">认证信息</p>
             <el-table :data="examine" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="created_at" label="日期" sortable></el-table-column>
@@ -66,7 +74,12 @@
                 <el-table-column prop="status_remark" label="审核不通过说明"></el-table-column>
                 <el-table-column prop="loan_remark" label="放款说明"></el-table-column>
                 <el-table-column prop="return_at" label="实际还款时间"></el-table-column>
-                <el-table-column prop="is_late" label="是否逾期"></el-table-column>
+                <el-table-column prop="is_late" label="是否逾期">
+                  <template slot-scope="scope">
+                    <span style="color:#f73e2f;" v-if="scope.row.is_late == 1">已逾期</span>
+                    <span style="color:#00D1B2;" v-else>未逾期</span>
+                  </template>
+                </el-table-column>
             </el-table>
             <p class="title">通讯录数据</p>
             <el-table :data="contacts" border style="width: 100%" ref="multipleTable">
@@ -91,6 +104,7 @@
                 bank: [],
                 card: [],
                 mobile: [],
+                ali_pay: [],
                 contacts: [],
                 examine: [],
                 approve: [],
@@ -119,20 +133,34 @@
               this.card = []
               this.mobile = []
               this.examine = []
+              this.ali_pay = []
               apiOrderDetail({
                 customer_id: this.id
               })
               .then((res)=>{
                 console.log('detail',res)
                 let detail = res.data
+                if(detail.is_auth == 0){
+                  detail.is_auth = '未认证'
+                }
+                if(detail.is_auth == 1){
+                  detail.is_auth = '已认证'
+                }
+                if(detail.is_auth == 2){
+                  detail.is_auth = '审核不通过'
+                }
                 let basic = {
                   name: detail.name?detail.name:detail.phone,
                   phone: detail.phone,
-                  id_card: detail.id_card,
+                  id_card: detail.bank_card.id_card,
                   created_at: detail.created_at,
-                  is_auth: detail.is_auth == 0?'未认证':'已认证'
+                  is_auth: detail.is_auth
                 }
                 this.basic.push(basic)
+                console.log('basic',this.basic)
+                if(detail.ali_pay){
+                  this.ali_pay.push(detail.ali_pay)
+                }
                 if(detail.bank_card){
                     this.bank.push(detail.bank_card)
                 }
