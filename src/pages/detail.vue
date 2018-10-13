@@ -66,7 +66,7 @@
             <el-table :data="approve" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="created_at" label="创建日期" sortable></el-table-column>
                 <el-table-column prop="order_no" label="订单编号"></el-table-column>
-                <el-table-column prop="status" label="审核状态"></el-table-column>
+                <el-table-column prop="state" label="审核状态"></el-table-column>
                 <el-table-column prop="loan_amount" label="借款金额"></el-table-column>
                 <el-table-column prop="into_amount" label="放款金额"></el-table-column>
                 <el-table-column prop="rate" label="费率"></el-table-column>
@@ -80,6 +80,14 @@
                     <span style="color:#00D1B2;" v-else>未逾期</span>
                   </template>
                 </el-table-column>
+                <el-table-column label="操作" width="200">
+                   <template slot-scope="scope">
+                      <el-button
+                        size="mini"
+                        type="primary"
+                        @click="checkOrderAgreement(scope.row)" v-show="scope.row.status == 3 || scope.row.status == 4">查看借条</el-button>
+                  </template>
+                </el-table-column>
             </el-table>
             <p class="title">通讯录数据</p>
             <el-table :data="contacts" border style="width: 100%" ref="multipleTable">
@@ -89,6 +97,24 @@
             </el-table>
             <el-button class="editor-btn" type="primary" @click="returnPage">返回</el-button>
         </div>
+
+
+         <!-- 查看借条 -->
+        <el-dialog title="借条信息" :visible.sync="dialogUpdate" width="500px" v-if="dialogUpdate">
+            <div class="agreement-header">
+                <p>贷款人: 精灵钱包</p>
+                <div class="text">
+                  <p>借款人:{{basic[0].name}}</p>
+                  <p>身份证号:{{basic[0].id_card}}</p>
+                  <p>今有借款人向贷款人借款人民币:{{argreementList.loan_amount}}元。借款时间为{{argreementList.created_at}}期限为7天,如遇申请延迟还款,还款时间按期限自动延续</p>
+                </div>
+                <div class="flex-text">
+                  <span>贷款人:精灵钱包</span>
+                  <span>借款人:{{basic[0].name}}</span>
+                </div>
+            </div>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -98,6 +124,7 @@
         name: 'editor',
         data: function(){
             return {
+                dialogUpdate: false,
                 content: '',
                 tableData: [],
                 basic: [],
@@ -108,6 +135,7 @@
                 contacts: [],
                 examine: [],
                 approve: [],
+                argreementList: {},
                 id: this.$route.query.id||''
             }
         },
@@ -126,6 +154,11 @@
         methods: {
             returnPage(){
                this.$router.go(-1)
+            },
+            checkOrderAgreement(row){
+               console.log(row)
+               this.argreementList = row
+               this.dialogUpdate = true
             },
             getOrderDetail(){
               this.basic = []
@@ -181,19 +214,19 @@
                    detail.loans.forEach(function(item){
                       switch (item.status) {
                           case 0:
-                              item.status = '待审核';
+                              item.state = '待审核';
                               break;
                           case 1:
-                              item.status = '审核通过待放款';
+                              item.state = '审核通过待放款';
                               break;
                           case 2:
-                              item.status = '审核不通过';
+                              item.state = '审核不通过';
                               break;
                           case 3:
-                              item.status = '已放款';
+                              item.state = '已放款';
                               break;
                           default:
-                              item.status = '已还款';
+                              item.state = '已还款';
                               break;
                       }
                     })
@@ -211,5 +244,22 @@
     .title{
         margin-bottom: 20px;
         margin-top: 20px;
+    }
+    .agreement-header{
+      width: 100%;
+      background: #ffffff;
+      padding:15px;
+      box-sizing: border-box;
+      font-size: 16px;
+      line-height: 25px;
+    }
+    .text{
+      margin-top: 10px;
+      margin-bottom: 30px;
+      color: #b5b6b7;
+    }
+    .flex-text{
+      display: flex;
+      justify-content: space-between;
     }
 </style>

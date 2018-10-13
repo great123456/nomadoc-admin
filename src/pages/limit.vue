@@ -26,7 +26,7 @@
                 <el-table-column prop="late_day" label="逾期天数"></el-table-column>
                 <el-table-column prop="late_fee" label="逾期费用"></el-table-column>
                 <el-table-column prop="state" label="状态"></el-table-column>
-                 <el-table-column label="操作" width="200">
+                <el-table-column label="操作" width="200">
                    <template slot-scope="scope">
                       <el-button
                         size="mini"

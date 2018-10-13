@@ -291,7 +291,7 @@
             },
             ordreDetailPage(row){
                this.$router.push({
-                 path: 'detail?id='+row.id
+                 path: 'detail?id='+row.customer_id
                })
             },
             selectType(){
