@@ -18,6 +18,25 @@
               </el-select>
               <el-input v-model="searchName" placeholder="请输入姓名" clearable style="width:200px;"></el-input>
               <el-input v-model="searchMobile" placeholder="请输入手机号" clearable style="width:200px;"></el-input>
+              <div style="margin-top:20px;"></div>
+              <span>注册时间:</span>
+              <el-date-picker
+                v-model="startTime"
+                value-format="yyyy-MM-dd"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+              <span style="margin-left:10px;">审核时间:</span>
+              <el-date-picker
+                v-model="endTime"
+                type="daterange"
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
               <el-button type="primary" plain @click="serarchPage">搜索</el-button>
               <!-- <el-button type="primary" plain>导出</el-button> -->
             </div>
@@ -104,6 +123,8 @@
                     id: 2,
                     name: '审核不通过'
                 }],
+                startTime: '',
+                endTime: '',
                 status: '',
                 searchName: '',
                 searchMobile: '',
@@ -147,6 +168,14 @@
                 const data = {
                   size: this.pageSize,
                   page: this.cur_page 
+                }
+                if(this.startTime){
+                  data.register_start = this.startTime[0]
+                  data.register_end = this.startTime[1]
+                }
+                if(this.endTime){
+                  data.examine_start = this.endTime[0]
+                  data.examine_end = this.endTime[1]
                 }
                 if(this.searchName){
                     data.name = this.searchName

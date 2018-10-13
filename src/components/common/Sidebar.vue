@@ -47,6 +47,10 @@
                         icon: 'el-icon-bell',
                         index: 'limit',
                         title: '逾期订单'
+                    },{
+                        icon: 'el-icon-bell',
+                        index: 'delay',
+                        title: '延期订单'
                     }
                     // {
                     //     icon: 'el-icon-bell',

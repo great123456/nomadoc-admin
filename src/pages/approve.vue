@@ -10,6 +10,16 @@
             <div class="handle-box">
               <el-input v-model="searchName" placeholder="请输入姓名" clearable style="width:200px;"></el-input>
               <el-input v-model="searchMobile" placeholder="请输入手机号" clearable style="width:200px;"></el-input>
+              <div style="margin-left:10px;display:inline-block;"></div>
+              <span>日期筛选:</span>
+              <el-date-picker
+                v-model="startTime"
+                value-format="yyyy-MM-dd"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
               <el-button type="primary" plain @click="serarchPage">搜索</el-button>
               <!-- <el-button type="primary" plain>导出</el-button> -->
             </div>
@@ -89,6 +99,7 @@
                 cur_page: 1,
                 pageSize: 10,
                 total: 0,
+                startTime: '',
                 select_cate: '',
                 select_word: '',
                 is_search: false,
@@ -126,6 +137,10 @@
                 const data = {
                   size: this.pageSize,
                   page: this.cur_page 
+                }
+                if(this.startTime){
+                  data.examine_start = this.startTime[0]
+                  data.examine_end = this.startTime[1]
                 }
                 if(this.searchName){
                     data.name = this.searchName

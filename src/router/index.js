@@ -38,6 +38,10 @@ export default new Router({
                     path: '/limit',
                     component: resolve => require(['../pages/limit.vue'], resolve),
                     meta: { title: '逾期订单' }
+                },{
+                    path: '/delay',
+                    component: resolve => require(['../pages/delay.vue'], resolve),
+                    meta: { title: '延期订单' }
                 },
                 {
                     // 用户审核

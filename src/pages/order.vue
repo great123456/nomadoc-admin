@@ -86,7 +86,7 @@
         </div>
         
 
-         <!-- 审核信息 -->
+        <!-- 审核信息 -->
         <el-dialog title="审核订单" :visible.sync="dialogUpdate" width="500px">
             <el-form ref="form" :model="form" label-width="120px">
                 <el-form-item label="审核不通过说明">
@@ -100,6 +100,22 @@
             </span>
         </el-dialog>
 
+        <!-- 延期 -->
+        <el-dialog title="延期确认" :visible.sync="dialogDelay" width="500px">
+            <el-form label-width="100px">
+                <el-form-item label="延期费用">
+                    <span>{{delayFee}}元</span>
+                </el-form-item>
+                <el-form-item label="延期数">
+                   <el-input-number v-model="period" @change="handleChange" :min="1" :max="10"></el-input-number>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogDelay = false">取消</el-button>
+                <el-button type="primary" @click="comfirmDelayOrder">确认延期</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -109,6 +125,7 @@
         data() {
             return {
                 dialogUpdate: false,
+                dialogDelay: false,
                 status: '',
                 startTime: '',
                 endTime: '',
@@ -146,7 +163,10 @@
                 form: {
                   remark: ''
                 },
-                updateId: ''
+                updateId: '',
+                period: 1,
+                delayFee: 0,
+                delayAccount: 0
             }
         },
         created() {
@@ -213,22 +233,30 @@
                     this.total = res.data.total
                 })
             },
+            handleChange(value) {
+              this.delayFee = this.delayAccount*value
+            },
             delayOrder(row){   //延期还款
-              this.$confirm('是否延期还款给用户?', '提示', {
-                   confirmButtonText: '确定',
-                   cancelButtonText: '取消',
-                   type: 'warning'
-                 }).then(() => {
-                   apiOrderDelay({
-                     id: row.id,
-                     period: 1
-                   })
-                 }).catch(() => {
-                   this.$message({
-                     type: 'info',
-                     message: '已取消延期操作'
-                   });          
-              });
+              this.dialogDelay = true
+              this.periodId = row.id
+              this.period = 1
+              this.delayFee = parseFloat(row.loan_amount) - parseFloat(row.into_amount)
+              this.delayAccount = parseFloat(row.loan_amount) - parseFloat(row.into_amount)
+            },
+            comfirmDelayOrder(){
+               apiOrderDelay({
+                 id: this.periodId,
+                 period: this.period
+               })
+               .then((res)=>{
+                if(res.code == 200){
+                   this.$message.success('操作成功')
+                   this.dialogDelay = false
+                   this.getData()
+                }else{
+                  this.$message.error(res.message)
+                }
+              })
             },
             setUserState(row,type){
                this.updateId = row.id

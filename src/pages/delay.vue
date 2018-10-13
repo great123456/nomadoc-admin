@@ -1,9 +1,9 @@
-<!-- 逾期订单 -->
+<!-- 延期订单 -->
 <template>
     <div class="table">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-tickets"></i>逾期订单</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-tickets"></i>延期订单</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
@@ -23,8 +23,7 @@
               <el-button type="primary" plain @click="serarchPage">搜索</el-button>
               <!-- <el-button type="primary" plain>导出</el-button> -->
             </div>
-            <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="55"></el-table-column>
+            <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="created_at" label="订单日期" sortable></el-table-column>
                 <el-table-column prop="order_no" label="订单编号"></el-table-column>
                 <el-table-column prop="customer.name" label="借款人"></el-table-column>
@@ -34,8 +33,8 @@
                 <el-table-column prop="rate" label="费率"></el-table-column>
                 <el-table-column prop="repaymen_at" label="该还款日期"></el-table-column>
                 <el-table-column prop="return_at" label="实际还款时间"></el-table-column>
-                <el-table-column prop="late_day" label="逾期天数"></el-table-column>
-                <el-table-column prop="late_fee" label="逾期费用"></el-table-column>
+                <el-table-column prop="delay_periods" label="延期数"></el-table-column>
+                <el-table-column prop="delay_fee" label="延期费用"></el-table-column>
                 <el-table-column prop="state" label="状态"></el-table-column>
                 <el-table-column label="操作" width="200">
                    <template slot-scope="scope">
@@ -50,10 +49,6 @@
                     </template>
                 </el-table-column>
             </el-table>
-            <el-button
-            size="mini"
-            type="primary"
-            @click="sendMessage" style="margin-top:10px;">群发信息</el-button>
             <div class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" :page-size="pageSize" layout="prev, pager, next" :total="total">
                 </el-pagination>
@@ -106,46 +101,11 @@
             serarchPage(){
               this.getData()
             },
-            handleSelectionChange(val){
-              this.multipleSelection = val
-            },
-            sendMessage(){ //群发信息
-              console.log(this.multipleSelection)
-              if(!this.multipleSelection.length){
-                this.$message('请先选择群发用户')
-                return
-              }
-              let ids = []
-              this.multipleSelection.forEach(function(item){
-                ids.push(item.id)
-              })
-              this.$confirm('确认给选择用户群发信息?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                  }).then(() => {
-                    apiOrdersendMessage({
-                      id: ids.join(',')
-                    })
-                    .then((res)=>{
-                       if(res.code == 200){
-                          this.$message.success('群发成功')
-                       }else{
-                         this.$message.error(res.message)
-                       }
-                    })
-                  }).catch(() => {
-                    this.$message({
-                      type: 'info',
-                      message: '已取消群发操作'
-                    });          
-              });
-            },
             getData() {
                 const data = {
                   size: this.pageSize,
                   page: this.cur_page,
-                  is_late: 1
+                  is_delay: 1
                 }
                 if(this.startTime){
                   data.return_at_start = this.startTime[0]

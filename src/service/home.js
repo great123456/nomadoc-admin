@@ -34,3 +34,6 @@ export const apiOrderCheck = (obj) => fetch(API_PATH + '/loan/change-status', ob
 
 //延期还款
 export const apiOrderDelay = (obj) => fetch(API_PATH + '/loan/delay', obj, 'POST')
+
+//短信
+export const apiOrdersendMessage = (obj) => fetch(API_PATH + '/loan/send', obj, 'POST')
