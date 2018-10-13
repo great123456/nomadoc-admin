@@ -23,7 +23,8 @@
               <el-button type="primary" plain @click="serarchPage">搜索</el-button>
               <!-- <el-button type="primary" plain>导出</el-button> -->
             </div>
-            <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
+            <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
+            	<el-table-column type="selection" width="55"></el-table-column>
                 <el-table-column prop="created_at" label="订单日期" sortable></el-table-column>
                 <el-table-column prop="order_no" label="订单编号"></el-table-column>
                 <el-table-column prop="customer.name" label="借款人"></el-table-column>
@@ -49,6 +50,10 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <el-button
+            size="mini"
+            type="primary"
+            @click="sendMessage" style="margin-top:10px;">群发信息</el-button>
             <div class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" :page-size="pageSize" layout="prev, pager, next" :total="total">
                 </el-pagination>
@@ -100,6 +105,41 @@
             },
             serarchPage(){
               this.getData()
+            },
+            handleSelectionChange(val){
+              this.multipleSelection = val
+            },
+            sendMessage(){ //群发信息
+              console.log(this.multipleSelection)
+              if(!this.multipleSelection.length){
+                this.$message('请先选择群发用户')
+                return
+              }
+              let ids = []
+              this.multipleSelection.forEach(function(item){
+                ids.push(item.id)
+              })
+              this.$confirm('确认给选择用户群发信息?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                  }).then(() => {
+                    apiOrdersendMessage({
+                      id: ids.join(',')
+                    })
+                    .then((res)=>{
+                       if(res.code == 200){
+                          this.$message.success('群发成功')
+                       }else{
+                         this.$message.error(res.message)
+                       }
+                    })
+                  }).catch(() => {
+                    this.$message({
+                      type: 'info',
+                      message: '已取消群发操作'
+                    });          
+              });
             },
             getData() {
                 const data = {
