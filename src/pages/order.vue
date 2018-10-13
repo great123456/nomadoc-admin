@@ -18,12 +18,31 @@
               </el-select>
               <el-input v-model="searchName" clearable placeholder="请输入姓名" style="width:200px;"></el-input>
               <el-input v-model="searchMobile" clearable placeholder="请输入手机号" style="width:200px;"></el-input>
+              <div style="margin-top:20px;"></div>
+              <span>借款日期:</span>
+              <el-date-picker
+                v-model="startTime"
+                value-format="yyyy-MM-dd"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+              <span style="margin-left:10px;">还款日期:</span>
+              <el-date-picker
+                v-model="endTime"
+                type="daterange"
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
               <el-button type="primary" plain @click="serarchPage">搜索</el-button>
               <!-- <el-button type="primary" plain>导出</el-button> -->
             </div>
-            <div style="margin-bottom:20px;">
+            <!-- <div style="margin-bottom:20px;">
                 <span>借款总计:</span>
-            </div>
+            </div> -->
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="created_at" label="订单日期" sortable></el-table-column>
                 <el-table-column prop="order_no" label="订单编号"></el-table-column>
@@ -35,7 +54,7 @@
                 <el-table-column prop="repaymen_at" label="该还款日期"></el-table-column>
                 <el-table-column prop="return_at" label="实际还款时间"></el-table-column>
                 <el-table-column prop="state" label="审核状态"></el-table-column>
-                 <el-table-column label="操作" width="200">
+                 <el-table-column label="操作" width="230">
                    <template slot-scope="scope">
                       <el-button
                         size="mini"
@@ -53,6 +72,10 @@
                         size="mini"
                         type="primary"
                         @click="ordreDetailPage(scope.row)">详情</el-button>
+                      <el-button
+                        size="mini"
+                        type="primary"
+                        @click="delayOrder(scope.row)" v-show="scope.row.status == 3">延期</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -81,12 +104,14 @@
 </template>
 
 <script>
-    import { apiOrderList,apiOrderCheck } from '@/service'
+    import { apiOrderList,apiOrderCheck,apiOrderDelay } from '@/service'
     export default {
         data() {
             return {
                 dialogUpdate: false,
                 status: '',
+                startTime: '',
+                endTime: '',
                 options: [{
                     id: '',
                     name: '全部'
@@ -142,7 +167,15 @@
             getData() {
                 const data = {
                   size: this.pageSize,
-                  page: this.cur_page 
+                  page: this.cur_page
+                }
+                if(this.startTime){
+                  data.loan_at_start = this.startTime[0]
+                  data.loan_at_end = this.startTime[1]
+                }
+                if(this.endTime){
+                  data.return_at_start = this.endTime[0]
+                  data.return_at_end = this.endTime[1]
                 }
                 if(this.searchName){
                     data.name = this.searchName
@@ -155,6 +188,7 @@
                 }
                 apiOrderList(data)
                 .then((res) => {
+                    console.log('res-order',res)
                     this.tableData = res.data.list
                     this.tableData.forEach(function(item){
                       item.customer.name = item.customer.name?item.customer.name:item.customer.phone
@@ -176,9 +210,25 @@
                               break;
                       }
                     })
-                    console.log('res-order',this.tableData)
                     this.total = res.data.total
                 })
+            },
+            delayOrder(row){   //延期还款
+              this.$confirm('是否延期还款给用户?', '提示', {
+                   confirmButtonText: '确定',
+                   cancelButtonText: '取消',
+                   type: 'warning'
+                 }).then(() => {
+                   apiOrderDelay({
+                     id: row.id,
+                     period: 1
+                   })
+                 }).catch(() => {
+                   this.$message({
+                     type: 'info',
+                     message: '已取消延期操作'
+                   });          
+              });
             },
             setUserState(row,type){
                this.updateId = row.id

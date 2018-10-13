@@ -24,12 +24,14 @@
                 <el-table-column prop="repaymen_at" label="该还款日期"></el-table-column>
                 <el-table-column prop="return_at" label="实际还款时间"></el-table-column>
                 <el-table-column prop="late_day" label="逾期天数"></el-table-column>
-                <el-table-column prop="return_at" label="逾期费用"></el-table-column>
+                <el-table-column prop="late_fee" label="逾期费用"></el-table-column>
+                <el-table-column prop="state" label="状态"></el-table-column>
                  <el-table-column label="操作" width="200">
                    <template slot-scope="scope">
                       <el-button
                         size="mini"
-                        type="primary">还款</el-button>
+                        type="primary"
+                        @click="setUserState(scope.row)" v-show="scope.row.status == 3">还款</el-button>
                       <el-button
                         size="mini"
                         type="primary"
@@ -103,11 +105,37 @@
                 .then((res) => {
                     this.tableData = res.data.list
                     this.tableData.forEach(function(item){
+                      item.state = item.status == 3?'未还款':'已还款'
                       item.customer.name = item.customer.name?item.customer.name:item.customer.phone
                     })
                     console.log('res-order',this.tableData)
                     this.total = res.data.total
                 })
+            },
+            setUserState(row){
+              this.$confirm('确认用户已经完成还款?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                  }).then(() => {
+                    apiOrderCheck({
+                      id: row.id,
+                      status: 4
+                    })
+                    .then((res)=>{
+                      if(res.code == 200){
+                         this.$message.success('操作成功')
+                         this.getData()
+                      }else{
+                        this.$message.error(res.message)
+                      }
+                    })
+                  }).catch(() => {
+                    this.$message({
+                      type: 'info',
+                      message: '已取消还款操作'
+                    });          
+              });
             },
             checkInfo(row){
               console.log('row',row)
