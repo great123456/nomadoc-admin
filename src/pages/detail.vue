@@ -100,18 +100,22 @@
 
 
          <!-- 查看借条 -->
-        <el-dialog title="借条信息" :visible.sync="dialogUpdate" width="500px" v-if="dialogUpdate">
+        <el-dialog title="借条信息" :visible.sync="dialogUpdate" width="600px" v-if="dialogUpdate">
             <div class="agreement-header">
+                <div class="header-right">
+                  <img src="/static/img/a.png" alt="">
+                  <p style="font-size: 13px;color: #b5b6b7;transform: translateX(-13px);">TS.8729327821</p>
+                </div>
                 <p>贷款人: 陆海波</p>
                 <p>贷款人身份证: 6205231985****0114</p>
                 <div class="text">
                   <p>借款人:{{basic[0].name}}</p>
-                  <p>借款人身份证号:{{basic[0].id_card}}</p>
-                  <p>今有借款人向贷款人借款人民币:{{argreementList.loan_amount}}元。借款时间为{{argreementList.created_at}}期限为7天,如遇申请延迟还款,还款时间按期限自动延续</p>
+                  <p>借款人身份证号:{{idCard}}</p>
+                  <p>今有借款人向贷款人借款人民币:{{argreementList.loan_amount}}元。借款时间为{{argreementList.created_at}}期限为7天,如遇申请延迟还款,还款时间按期限自动延续。</p>
                 </div>
                 <div class="flex-text">
-                  <span>贷款人:陆海波</span>
-                  <span>借款人:{{basic[0].name}}</span>
+                  <span style="position: relative;"><span style="position: relative;top:-19px;">贷款人:</span><img src="/static/img/b.png" alt="" class="bottom-img"><span style="font-size: 10px;position: absolute;bottom:-3px;left:95px;">{{randomNumber}}</span><span style="position: absolute;bottom:20px;left:95px;">陆海波</span></span>
+                  <span style="position: relative;"><span style="position: relative;top:-19px;">借款人:</span><img src="/static/img/b.png" alt="" class="bottom-img"><span style="font-size: 10px;position: absolute;bottom:-3px;left:95px;">{{randomNumber}}</span><span style="position: absolute;bottom:20px;left:95px;">{{basic[0].name}}</span></span>
                 </div>
             </div>
         </el-dialog>
@@ -139,6 +143,16 @@
                 argreementList: {},
                 id: this.$route.query.id||''
             }
+        },
+        computed: {
+          randomNumber(){
+            return parseInt(100000000*Math.random())
+          },
+          idCard(){
+            let arr = this.basic[0].id_card.split('')
+            arr.fill('*',10,14)
+            return arr.join('')
+          }
         },
         watch:{
            $route(newValue, oldValue){
@@ -255,12 +269,27 @@
       line-height: 25px;
     }
     .text{
-      margin-top: 10px;
+      margin-top: 3px;
       margin-bottom: 30px;
       color: #b5b6b7;
     }
     .flex-text{
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+    .header-right{
+      float: right;
+    }
+    .header-right img{
+      width: 60px;
+      height: 60px;
+    }
+    .bottom-img{
+      width: auto;
+      height: 50px;
+      margin-left:10px;
+      margin-right: 5px;
     }
 </style>
