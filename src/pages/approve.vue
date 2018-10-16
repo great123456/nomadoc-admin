@@ -216,6 +216,7 @@
                 if(res.code == 200){
                    this.$message.success('操作成功')
                    this.dialogUpdate = false
+                   this.getData()
                 }else{
                   this.$message.error(res.message)
                 }

@@ -34,7 +34,7 @@
                 <el-table-column prop="rate" label="费率"></el-table-column>
                 <el-table-column prop="repaymen_at" label="该还款日期"></el-table-column>
                 <el-table-column prop="return_at" label="实际还款时间"></el-table-column>
-                <el-table-column prop="delay_periods" label="延期数"></el-table-column>
+                <el-table-column prop="delay_days" label="延期天数"></el-table-column>
                 <el-table-column prop="delay_fee" label="延期费用"></el-table-column>
                 <el-table-column prop="state" label="状态"></el-table-column>
                 <el-table-column label="操作" width="200">

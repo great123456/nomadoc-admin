@@ -108,12 +108,21 @@
         <!-- 延期 -->
         <el-dialog title="延期确认" :visible.sync="dialogDelay" width="500px">
             <el-form label-width="100px">
+                <el-form-item label="延期时间">
+                  <el-date-picker
+                    v-model="delay_to"
+                    type="date"
+                    value-format="yyyy-MM-dd"
+                    placeholder="选择日期">
+                  </el-date-picker>
+                </el-form-item>
                 <el-form-item label="延期费用">
-                    <span>{{delayFee}}元</span>
+                    <!-- <span>{{delayFee}}元</span> -->
+                    <el-input v-model="delay_fee" style="width:160px;marign-right:3px;"></el-input>元
                 </el-form-item>
-                <el-form-item label="延期数">
+                <!-- <el-form-item label="延期数">
                    <el-input-number v-model="period" @change="handleChange" :min="1" :max="10"></el-input-number>
-                </el-form-item>
+                </el-form-item> -->
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogDelay = false">取消</el-button>
@@ -172,6 +181,8 @@
                 period: 1,
                 delayFee: 0,
                 delayAccount: 0,
+                delay_to: '',
+                delay_fee: '',
                 multipleSelection: []
             }
         },
@@ -287,7 +298,8 @@
             comfirmDelayOrder(){
                apiOrderDelay({
                  id: this.periodId,
-                 period: this.period
+                 delay_fee: this.delay_fee,
+                 delay_to: this.delay_to
                })
                .then((res)=>{
                 if(res.code == 200){
@@ -348,6 +360,7 @@
                 if(res.code == 200){
                    this.$message.success('操作成功')
                    this.dialogUpdate = false
+                   this.getData()
                 }else{
                   this.$message.error(res.message)
                 }
