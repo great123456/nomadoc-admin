@@ -46,8 +46,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                       apiUserLogin({
-                        name: 'admin',
-                        email: self.ruleForm.username,
+                        name: self.ruleForm.username,
                         password: self.ruleForm.password
                       })
                       .then((res)=>{
