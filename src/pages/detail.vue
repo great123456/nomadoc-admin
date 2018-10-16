@@ -170,6 +170,9 @@
             returnPage(){
                this.$router.go(-1)
             },
+            checkImage(url){
+              window.open(url)
+            },
             checkOrderAgreement(row){
                console.log(row)
                this.argreementList = row
