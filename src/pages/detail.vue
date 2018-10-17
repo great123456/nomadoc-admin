@@ -112,6 +112,7 @@
                   <p>借款人:{{basic[0].name}}</p>
                   <p>借款人身份证号:{{idCard}}</p>
                   <p>今有借款人向贷款人借款人民币:{{argreementList.loan_amount}}元。借款时间为{{argreementList.created_at}}期限为7天,如遇申请延迟还款,还款时间按期限自动延续。</p>
+                  <img src="/static/img/c.png" alt="" class="limit-img" v-show="argreementList.status == 4">
                 </div>
                 <div class="flex-text">
                   <span style="position: relative;"><span style="position: relative;top:-19px;">贷款人:</span><img src="/static/img/b.png" alt="" class="bottom-img"><span style="font-size: 10px;position: absolute;bottom:-3px;left:95px;">{{randomNumber}}</span><span style="position: absolute;bottom:20px;left:95px;">陆海波</span></span>
@@ -275,6 +276,14 @@
       margin-top: 3px;
       margin-bottom: 30px;
       color: #b5b6b7;
+      position: relative;
+    }
+    .limit-img{
+      position: absolute;
+      bottom: -50px;
+      right: 130px;
+      width: 120px;
+      height: 120px;
     }
     .flex-text{
       display: flex;
