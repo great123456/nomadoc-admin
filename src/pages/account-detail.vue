@@ -139,15 +139,14 @@
                   is_auth: detail.is_auth,
                   agent: detail.agent
                 }
-                switch (basic.is_auth) {
-                    case 0:
-                        basic.is_auth = '未认证'
-                        break;
-                    case 1:
-                        basic.is_auth = '已认证'
-                    default:
-                        basic.is_auth = '审核不通过'
-                        break;
+                if(basic.is_auth == 0){
+                  basic.is_auth = '未认证'
+                }
+                if(basic.is_auth == 1){
+                  basic.is_auth = '已认证'
+                }
+                if(basic.is_auth == 2){
+                  basic.is_auth = '审核不通过'
                 }
                 this.basic.push(basic)
                 if(detail.bank_card){
