@@ -13,6 +13,7 @@
                 <el-table-column prop="name" label="用户名" sortable></el-table-column>
                 <el-table-column prop="phone" label="手机号"></el-table-column>
                 <el-table-column prop="is_auth" label="认证状态"></el-table-column>
+                <el-table-column prop="agent" label="操作系统"></el-table-column>
             </el-table>
             <p class="title">银行卡数据</p>
             <el-table :data="bank" border style="width: 100%">
@@ -69,6 +70,13 @@
                 <el-table-column prop="name" label="姓名"></el-table-column>
                 <el-table-column prop="phone" label="电话"></el-table-column>
             </el-table>
+            <p class="title">通话记录</p>
+            <el-table :data="recordList" border style="width: 100%">
+                <el-table-column prop="time" label="通话时间" sortable></el-table-column>
+                <el-table-column prop="name" label="通话人"></el-table-column>
+                <el-table-column prop="phone" label="通话电话"></el-table-column>
+                <el-table-column prop="type" label="通话类型"></el-table-column>
+            </el-table>
             <el-button class="editor-btn" type="primary" @click="returnPage">返回</el-button>
         </div>
     </div>
@@ -88,7 +96,8 @@
                 ali_pay: [],
                 contacts: [],
                 id: this.$route.query.id||'',
-                examine: []
+                examine: [],
+                recordList: []
             }
         },
         watch:{
@@ -127,7 +136,8 @@
                   name: detail.name?detail.name:detail.phone,
                   phone: detail.phone,
                   created_at: detail.created_at,
-                  is_auth: detail.is_auth
+                  is_auth: detail.is_auth,
+                  agent: detail.agent
                 }
                 switch (basic.is_auth) {
                     case 0:
@@ -142,6 +152,9 @@
                 this.basic.push(basic)
                 if(detail.bank_card){
                   this.bank.push(detail.bank_card)
+                }
+                if(detail.call_record.length){
+                  this.recordList = detail.call_record
                 }
                 if(detail.ali_pay){
                   this.ali_pay.push(detail.ali_pay)
