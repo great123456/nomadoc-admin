@@ -111,7 +111,7 @@
                 <div class="text">
                   <p>借款人:{{basic[0].name}}</p>
                   <p>借款人身份证号:{{idCard}}</p>
-                  <p>今有借款人向贷款人借款人民币:{{argreementList.loan_amount}}元。借款时间为{{argreementList.created_at}}期限为7天,如遇申请延迟还款,还款时间按期限自动延续。</p>
+                  <p>今有借款人向贷款人借款人民币:{{argreementList.loan_amount}}元。借款时间为{{argreementList.loan_at}}期限为7天,如遇申请延迟还款,还款时间按期限自动延续。</p>
                   <img src="/static/img/c.png" alt="" class="limit-img" v-show="argreementList.status == 4">
                 </div>
                 <div class="flex-text">
