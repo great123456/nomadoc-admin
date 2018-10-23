@@ -176,7 +176,9 @@
             },
             checkOrderAgreement(row){
                console.log(row)
-               this.argreementList = row
+               let params = JSON.parse(JSON.stringify(row))
+               params.loan_at = params.loan_at.split(' ')[0]
+               this.argreementList = params
                this.dialogUpdate = true
             },
             getOrderDetail(){
