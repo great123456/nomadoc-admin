@@ -21,17 +21,36 @@
                         {{username}} <i class="el-icon-caret-bottom"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item divided  command="update">修改密码</el-dropdown-item>
                         <el-dropdown-item divided  command="loginout">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
         </div>
-
+        
+         <!-- 修改密码 -->
+        <el-dialog title="修改密码" :visible.sync="updateDialog" width="500px">
+            <el-form ref="form" :model="form" label-width="80px">
+                <el-form-item label="原密码">
+                    <el-input v-model="form.password"></el-input>
+                </el-form-item>
+                <el-form-item label="新密码">
+                    <el-input v-model="form.new_password"></el-input>
+                </el-form-item>
+                <el-form-item label="确认密码">
+                    <el-input v-model="form.new_password_confirmation"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="updateDialog = false">取 消</el-button>
+                <el-button type="primary">修改</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 <script>
     import bus from '../common/bus';
-    import { apiUserLoginOut } from '@/service';
+    import { apiUserLoginOut,apiUserUpdatePassword } from '@/service';
     export default {
         data() {
             return {
@@ -42,7 +61,9 @@
                 username: 'admin',
                 updateDialog: false,
                 form: {
-                  password: ''
+                  password: '',
+                  new_password: '',
+                  new_password_confirmation: ''
                 }
             }
         },
@@ -64,6 +85,24 @@
                         }
                     })
                 }
+                if(command == 'update'){
+                   this.updateDialog = true
+                }
+            },
+            updateUserPassword(){
+              apiUserUpdatePassword({
+                password:this.form.password,
+                new_password: this.form.new_password,
+                new_password_confirmation: this.form.new_password_confirmation
+              })
+              .then((res)=>{
+                if(res.code == 200){
+                    this.$message.success('重置密码成功')
+                    this.updateDialog = false
+                }else{
+                    this.$message.error(res.message)
+                }
+              })
             },
             // 侧边栏折叠
             collapseChage(){

@@ -21,7 +21,7 @@
                 end-placeholder="结束日期">
               </el-date-picker>
               <el-button type="primary" plain @click="serarchPage">搜索</el-button>
-              <!-- <el-button type="primary" plain>导出</el-button> -->
+              <el-button type="primary" plain @click="exportOrderList">导出</el-button>
             </div>
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
             	<el-table-column type="selection" width="55"></el-table-column>
@@ -105,6 +105,9 @@
             },
             serarchPage(){
               this.getData()
+            },
+            exportOrderList(){
+              window.location.href = 'http://wallet.hxgtech.com'+'/api/admin/loan/excel?token='+`${localStorage.getItem('admin-token')}`+'&is_delay=1'+'&return_at_start='+this.startTime[0]+'&return_at_end='+this.startTime[1]
             },
             handleSelectionChange(val){
               this.multipleSelection = val

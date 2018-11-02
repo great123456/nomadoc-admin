@@ -38,7 +38,7 @@
                 end-placeholder="结束日期">
               </el-date-picker>
               <el-button type="primary" plain @click="serarchPage">搜索</el-button>
-              <!-- <el-button type="primary" plain>导出</el-button> -->
+              <el-button type="primary" plain @click="exportOrderList">导出</el-button>
             </div>
             <!-- <div style="margin-bottom:20px;">
                 <span>借款总计:</span>
@@ -197,6 +197,9 @@
             handleCurrentChange(val) {
                 this.cur_page = val;
                 this.getData();
+            },
+            exportOrderList(){
+              window.location.href = 'http://wallet.hxgtech.com'+'/api/admin/loan/excel?token='+`${localStorage.getItem('admin-token')}`+'&loan_at_start='+ this.startTime[0]+'&loan_at_end='+this.startTime[1]+'&return_at_start='+this.endTime[0]+'&return_at_end='+this.endTime[1]
             },
             serarchPage(){
               this.getData()

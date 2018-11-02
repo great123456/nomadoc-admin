@@ -37,3 +37,6 @@ export const apiOrderDelay = (obj) => fetch(API_PATH + '/loan/delay', obj, 'POST
 
 //短信
 export const apiOrdersendMessage = (obj) => fetch(API_PATH + '/loan/send', obj, 'POST')
+
+//重置密码
+export const apiUserUpdatePassword = (obj) => fetch(API_PATH + '/user/reset', obj, 'POST')
