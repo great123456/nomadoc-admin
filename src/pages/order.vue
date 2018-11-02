@@ -199,7 +199,7 @@
                 this.getData();
             },
             exportOrderList(){
-              window.location.href = 'http://wallet.hxgtech.com'+'/api/admin/loan/excel?token='+`${localStorage.getItem('admin-token')}`+'&loan_at_start='+ this.startTime[0]+'&loan_at_end='+this.startTime[1]+'&return_at_start='+this.endTime[0]+'&return_at_end='+this.endTime[1]
+              window.location.href = 'http://wallet.hxgtech.com'+'/api/admin/loan/excel?token='+`${localStorage.getItem('admin-token')}`
             },
             serarchPage(){
               this.getData()

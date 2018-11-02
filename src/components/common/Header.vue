@@ -43,7 +43,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="updateDialog = false">取 消</el-button>
-                <el-button type="primary">修改</el-button>
+                <el-button type="primary" @click="updateUserPassword">修改</el-button>
             </span>
         </el-dialog>
     </div>
@@ -90,6 +90,10 @@
                 }
             },
             updateUserPassword(){
+              if(this.form.password == '' || this.form.new_password == ''){
+                this.$message.error('密码不能为空')
+                return
+              }
               apiUserUpdatePassword({
                 password:this.form.password,
                 new_password: this.form.new_password,

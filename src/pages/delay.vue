@@ -107,7 +107,9 @@
               this.getData()
             },
             exportOrderList(){
-              window.location.href = 'http://wallet.hxgtech.com'+'/api/admin/loan/excel?token='+`${localStorage.getItem('admin-token')}`+'&is_delay=1'+'&return_at_start='+this.startTime[0]+'&return_at_end='+this.startTime[1]
+              let return_at_start = this.startTime[0] || ''
+              let return_at_end = this.startTime[1] || ''
+              window.location.href = 'http://wallet.hxgtech.com'+'/api/admin/loan/excel?token='+`${localStorage.getItem('admin-token')}`+'&is_delay=1'
             },
             handleSelectionChange(val){
               this.multipleSelection = val
