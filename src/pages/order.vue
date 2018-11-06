@@ -52,6 +52,7 @@
                 <el-table-column prop="loan_amount" label="借款金额"></el-table-column>
                 <el-table-column prop="into_amount" label="放款金额"></el-table-column>
                 <el-table-column prop="rate" label="费率"></el-table-column>
+                <el-table-column prop="loan_at" label="放款时间"></el-table-column>
                 <el-table-column prop="repaymen_at" label="该还款日期"></el-table-column>
                 <el-table-column prop="return_at" label="实际还款时间"></el-table-column>
                 <el-table-column prop="state" label="审核状态"></el-table-column>

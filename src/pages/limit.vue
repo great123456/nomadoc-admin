@@ -32,17 +32,22 @@
                 <el-table-column prop="loan_amount" label="借款金额"></el-table-column>
                 <el-table-column prop="into_amount" label="放款金额"></el-table-column>
                 <el-table-column prop="rate" label="费率"></el-table-column>
+                <el-table-column prop="loan_at" label="放款时间"></el-table-column>
                 <el-table-column prop="repaymen_at" label="该还款日期"></el-table-column>
                 <el-table-column prop="return_at" label="实际还款时间"></el-table-column>
                 <el-table-column prop="late_day" label="逾期天数"></el-table-column>
                 <el-table-column prop="late_fee" label="逾期费用"></el-table-column>
                 <el-table-column prop="state" label="状态"></el-table-column>
-                <el-table-column label="操作" width="200">
+                <el-table-column label="操作" width="230">
                    <template slot-scope="scope">
                       <el-button
                         size="mini"
                         type="primary"
                         @click="setUserState(scope.row)" v-show="scope.row.status == 3">还款</el-button>
+                      <el-button
+                        size="mini"
+                        type="primary"
+                        @click="delayOrder(scope.row)">延期</el-button>
                       <el-button
                         size="mini"
                         type="primary"
@@ -60,7 +65,30 @@
             </div>
         </div>
         
-
+        <!-- 延期 -->
+        <el-dialog title="延期确认" :visible.sync="dialogDelay" width="500px">
+            <el-form label-width="100px">
+                <el-form-item label="延期时间">
+                  <el-date-picker
+                    v-model="delay_to"
+                    type="date"
+                    value-format="yyyy-MM-dd"
+                    placeholder="选择日期">
+                  </el-date-picker>
+                </el-form-item>
+                <el-form-item label="延期费用">
+                    <!-- <span>{{delayFee}}元</span> -->
+                    <el-input v-model="delay_fee" style="width:160px;marign-right:3px;"></el-input>元
+                </el-form-item>
+                <!-- <el-form-item label="延期数">
+                   <el-input-number v-model="period" @change="handleChange" :min="1" :max="10"></el-input-number>
+                </el-form-item> -->
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogDelay = false">取消</el-button>
+                <el-button type="primary" @click="comfirmDelayOrder">确认延期</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -88,7 +116,11 @@
                   remark: ''
                 },
                 updateId: '',
-                multipleSelection: []
+                multipleSelection: [],
+                delay_to: '',
+                delay_fee: '',
+                periodId: '',
+                dialogDelay: false
             }
         },
         created() {
@@ -102,6 +134,26 @@
             handleCurrentChange(val) {
                 this.cur_page = val;
                 this.getData();
+            },
+            delayOrder(row){   //延期还款
+              this.dialogDelay = true
+              this.periodId = row.id
+            },
+            comfirmDelayOrder(){
+               apiOrderDelay({
+                 id: this.periodId,
+                 delay_fee: this.delay_fee,
+                 delay_to: this.delay_to
+               })
+               .then((res)=>{
+                if(res.code == 200){
+                   this.$message.success('操作成功')
+                   this.dialogDelay = false
+                   this.getData()
+                }else{
+                  this.$message.error(res.message)
+                }
+              })
             },
             serarchPage(){
               this.getData()
