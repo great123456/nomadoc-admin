@@ -4,7 +4,7 @@
         <div class="collapse-btn" @click="collapseChage">
             <i class="el-icon-menu"></i>
         </div>
-        <div class="logo">精灵口袋后台管理系统</div>
+        <div class="logo">游牧未来后台管理系统</div>
         <div class="header-right">
             <div class="header-user-con">
                 <!-- 全屏显示 -->
@@ -74,16 +74,17 @@
             // 用户名下拉菜单选择事件
             handleCommand(command) {
                 if(command == 'loginout'){
-                    localStorage.removeItem('ms_username')
-                    apiUserLoginOut()
-                    .then((res)=>{
-                        if(res.code == 200){
-                            this.$message.success('退出登录成功');
-                            this.$router.push('/login');
-                        }else{
-                            this.$message.error('退出登录失败');
-                        }
-                    })
+                    this.$router.push('/login');
+                    // localStorage.removeItem('ms_username')
+                    // apiUserLoginOut()
+                    // .then((res)=>{
+                    //     if(res.code == 200){
+                    //         this.$message.success('退出登录成功');
+                    //         this.$router.push('/login');
+                    //     }else{
+                    //         this.$message.error('退出登录失败');
+                    //     }
+                    // })
                 }
                 if(command == 'update'){
                    this.updateDialog = true
@@ -94,19 +95,19 @@
                 this.$message.error('密码不能为空')
                 return
               }
-              apiUserUpdatePassword({
-                password:this.form.password,
-                new_password: this.form.new_password,
-                new_password_confirmation: this.form.new_password_confirmation
-              })
-              .then((res)=>{
-                if(res.code == 200){
-                    this.$message.success('重置密码成功')
-                    this.updateDialog = false
-                }else{
-                    this.$message.error(res.message)
-                }
-              })
+              // apiUserUpdatePassword({
+              //   password:this.form.password,
+              //   new_password: this.form.new_password,
+              //   new_password_confirmation: this.form.new_password_confirmation
+              // })
+              // .then((res)=>{
+              //   if(res.code == 200){
+              //       this.$message.success('重置密码成功')
+              //       this.updateDialog = false
+              //   }else{
+              //       this.$message.error(res.message)
+              //   }
+              // })
             },
             // 侧边栏折叠
             collapseChage(){

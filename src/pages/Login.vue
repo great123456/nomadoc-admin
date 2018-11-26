@@ -1,6 +1,6 @@
 <template>
     <div class="login-wrap">
-        <div class="ms-title">精灵口袋后台管理系统</div>
+        <div class="ms-title">游牧未来后台管理系统</div>
         <div class="ms-login">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
                 <el-form-item prop="username">
@@ -45,21 +45,22 @@
                 const self = this
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                      apiUserLogin({
-                        name: self.ruleForm.username,
-                        password: self.ruleForm.password
-                      })
-                      .then((res)=>{
-                        console.log('res',res)
-                        if(res.code == 200){
-                          self.$message.success('登录成功')
-                          localStorage.setItem('admin-token',res.data.token)
-                          localStorage.setItem('username',self.ruleForm.username);
-                          self.$router.push('/order');
-                        }else{
-                          self.$message.error('用户名或者密码错误')
-                        }
-                      })
+                      self.$router.push('/order');
+                      // apiUserLogin({
+                      //   name: self.ruleForm.username,
+                      //   password: self.ruleForm.password
+                      // })
+                      // .then((res)=>{
+                      //   console.log('res',res)
+                      //   if(res.code == 200){
+                      //     self.$message.success('登录成功')
+                      //     localStorage.setItem('admin-token',res.data.token)
+                      //     localStorage.setItem('username',self.ruleForm.username);
+                      //     self.$router.push('/order');
+                      //   }else{
+                      //     self.$message.error('用户名或者密码错误')
+                      //   }
+                      // })
                     } else {
                         return false;
                     }

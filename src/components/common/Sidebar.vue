@@ -33,45 +33,21 @@
                     {
                         icon: 'el-icon-menu',
                         index: 'order',
-                        title: '借款订单'
+                        title: '课程订单'
                     },
                     {
                         icon: 'el-icon-goods',
                         index: 'account',
-                        title: '用户审核'
+                        title: '用户列表'
                     },{
                         icon: 'el-icon-bell',
                         index: 'approve',
-                        title: '审核通过'
+                        title: '课程列表'
                     },{
                         icon: 'el-icon-bell',
-                        index: 'limit',
-                        title: '逾期订单'
-                    },{
-                        icon: 'el-icon-bell',
-                        index: 'delay',
-                        title: '延期订单'
+                        index: 'banner',
+                        title: 'banner管理'
                     }
-                    // {
-                    //     icon: 'el-icon-bell',
-                    //     index: 'check',
-                    //     title: '人工降重'
-                    // },
-                    // {
-                    //     icon: 'el-icon-bell',
-                    //     index: 'recharge',
-                    //     title: '充值订单'
-                    // },
-                    // {
-                    //     icon: 'el-icon-menu',
-                    //     index: 'type',
-                    //     title: '检测类型'
-                    // },
-                    // {
-                    //     icon: 'el-icon-setting',
-                    //     index: 'fee',
-                    //     title: '降重收费'
-                    // }
                 ]
             }
         },

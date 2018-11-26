@@ -23,7 +23,7 @@ export default new Router({
                 {
                     path: '/order',
                     component: resolve => require(['../pages/order.vue'], resolve),
-                    meta: { title: '借款订单' }
+                    meta: { title: '课程订单' }
                 },
                 {
                     path: '/detail',
@@ -33,26 +33,17 @@ export default new Router({
                 {
                     path: '/approve',
                     component: resolve => require(['../pages/approve.vue'], resolve),
-                    meta: { title: '认证用户' }
+                    meta: { title: '课程列表' }
                 },{
-                    path: '/limit',
-                    component: resolve => require(['../pages/limit.vue'], resolve),
-                    meta: { title: '逾期订单' }
-                },{
-                    path: '/delay',
-                    component: resolve => require(['../pages/delay.vue'], resolve),
-                    meta: { title: '延期订单' }
+                    path: '/banner',
+                    component: resolve => require(['../pages/banner.vue'], resolve),
+                    meta: { title: 'banner管理' }
                 },
                 {
-                    // 用户审核
+                    // 用户列表
                     path: '/account',
                     component: resolve => require(['../pages/account.vue'], resolve),
-                    meta: { title: '用户审核' }
-                },{
-                    // 客户详情
-                    path: '/account-detail',
-                    component: resolve => require(['../pages/account-detail.vue'], resolve),
-                    meta: { title: '客户详情' }
+                    meta: { title: '用户列表' }
                 }
             ]
         },

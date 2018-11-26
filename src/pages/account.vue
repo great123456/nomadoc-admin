@@ -1,24 +1,14 @@
-<!-- 用户审核 -->
+<!-- 用户列表 -->
 <template>
     <div class="table">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-tickets"></i>用户审核</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-tickets"></i>用户列表</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
             <div class="handle-box">
-              <el-select v-model="status" placeholder="请选择">
-                  <el-option
-                    v-for="item in options"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id">
-                  </el-option>
-              </el-select>
-              <el-input v-model="searchName" placeholder="请输入姓名" clearable style="width:200px;"></el-input>
-              <el-input v-model="searchMobile" placeholder="请输入手机号" clearable style="width:200px;"></el-input>
-              <div style="margin-top:20px;"></div>
+              <el-input v-model="searchName" placeholder="请输入用户名" clearable style="width:200px;"></el-input>
               <span>注册时间:</span>
               <el-date-picker
                 v-model="startTime"
@@ -28,42 +18,16 @@
                 start-placeholder="开始日期"
                 end-placeholder="结束日期">
               </el-date-picker>
-              <span style="margin-left:10px;">审核时间:</span>
-              <el-date-picker
-                v-model="endTime"
-                type="daterange"
-                value-format="yyyy-MM-dd"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期">
-              </el-date-picker>
               <el-button type="primary" plain @click="serarchPage">搜索</el-button>
               <!-- <el-button type="primary" plain>导出</el-button> -->
             </div>
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="id" label="用户id"></el-table-column>
-                <el-table-column prop="created_at" label="订单时间"></el-table-column>
-                <el-table-column prop="name" label="姓名"></el-table-column>
-                <el-table-column prop="phone" label="手机号码"></el-table-column>
-                <el-table-column prop="id_card_count" label="身份证认证"></el-table-column>
-                <el-table-column prop="mobile_carrier_count" label="运营商认证"></el-table-column>
-                <el-table-column prop="phone_list_count" label="通讯录认证"></el-table-column>
-                <el-table-column prop="ali_pay_count" label="支付宝认证"></el-table-column>
-                <el-table-column prop="is_auth" label="审核状态"></el-table-column>
-                <el-table-column label="操作" width="200">
-                   <template slot-scope="scope">
-                      <el-button
-                         size="mini"
-                         type="primary"
-                         @click="handleEdit(scope.$index, scope.row)">审核</el-button>
-                      <el-button
-                      <el-button
-                         size="mini"
-                         type="primary"
-                         @click="accountDetailPage(scope.$index, scope.row)">查看</el-button>
-                      <el-button
-                    </template>
-                </el-table-column>
+                <el-table-column prop="created_at" label="注册时间"></el-table-column>
+                <el-table-column prop="name" label="用户昵称"></el-table-column>
+                <el-table-column prop="id_card_count" label="用户头像"></el-table-column>
+                <el-table-column prop="phone_list_count" label="是否分销"></el-table-column>
+                <el-table-column prop="ali_pay_count" label="上级用户"></el-table-column>
             </el-table>
             <div class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" :page-size="pageSize" layout="prev, pager, next" :total="total">
@@ -169,48 +133,10 @@
                   size: this.pageSize,
                   page: this.cur_page 
                 }
-                if(this.startTime){
-                  data.register_start = this.startTime[0]
-                  data.register_end = this.startTime[1]
-                }
-                if(this.endTime){
-                  data.examine_start = this.endTime[0]
-                  data.examine_end = this.endTime[1]
-                }
-                if(this.searchName){
-                    data.name = this.searchName
-                }
-                if(this.searchMobile){
-                    data.phone = this.searchMobile
-                }
-                if(this.status !==''){
-                    data.status = this.status
-                }
-                apiUserList(data)
-                .then((res) => {
-                    console.log('res-order',res.data)
-                    this.tableData = res.data.list
-                    this.tableData.forEach(function(item){
-                      item.name = item.name?item.name:item.phone
-                      item.ali_pay_count = item.ali_pay_count>0?'已提交认证':'未提交认证'
-                      item.bank_card_count = item.bank_card_count>0?'已提交认证':'未提交认证'
-                      item.id_card_count = item.id_card_count>0?'已提交认证':'未提交认证'
-                      item.mobile_carrier_count = item.mobile_carrier_count>0?'已提交认证':'未提交认证'
-                      item.phone_list_count = item.phone_list_count>0?'已提交认证':'未提交认证'
-                      switch (item.is_auth) {
-                        case 0:
-                          item.is_auth = '未认证';
-                          break;
-                        case 1:
-                          item.is_auth = '已完成认证';
-                          break;
-                        default:
-                          item.is_auth = '审核不通过';
-                          break;
-                      }
-                    })
-                    this.total = res.data.total
-                })
+                // apiUserList(data)
+                // .then((res) => {
+                //     this.total = res.data.total
+                // })
             },
             handleEdit(index,row){
               this.dialogUpdate = true

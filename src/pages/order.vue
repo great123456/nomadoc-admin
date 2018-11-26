@@ -1,9 +1,9 @@
-<!-- 借款订单 -->
+<!-- 课程订单 -->
 <template>
     <div class="table">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-tickets"></i>借款订单</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-tickets"></i>课程订单</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
@@ -16,10 +16,8 @@
                     :value="item.id">
                   </el-option>
               </el-select>
-              <el-input v-model="searchName" clearable placeholder="请输入姓名" style="width:200px;"></el-input>
-              <el-input v-model="searchMobile" clearable placeholder="请输入手机号" style="width:200px;"></el-input>
-              <div style="margin-top:20px;"></div>
-              <span>借款日期:</span>
+              <el-input v-model="searchName" clearable placeholder="请输入用户名" style="width:190px;"></el-input>
+              <span>订单日期:</span>
               <el-date-picker
                 v-model="startTime"
                 value-format="yyyy-MM-dd"
@@ -28,63 +26,28 @@
                 start-placeholder="开始日期"
                 end-placeholder="结束日期">
               </el-date-picker>
-              <span style="margin-left:10px;">还款日期:</span>
-              <el-date-picker
-                v-model="endTime"
-                type="daterange"
-                value-format="yyyy-MM-dd"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期">
-              </el-date-picker>
               <el-button type="primary" plain @click="serarchPage">搜索</el-button>
-              <el-button type="primary" plain @click="exportOrderList">导出</el-button>
             </div>
             <!-- <div style="margin-bottom:20px;">
                 <span>借款总计:</span>
             </div> -->
-            <el-table :data="tableData" border style="width: 100%" ref="multipleTable"  @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="55"></el-table-column>
+            <el-table :data="tableData" border style="width: 100%">
                 <el-table-column prop="created_at" label="订单日期" sortable></el-table-column>
                 <el-table-column prop="order_no" label="订单编号"></el-table-column>
-                <el-table-column prop="customer.name" label="借款人"></el-table-column>
-                <el-table-column prop="customer.phone" label="手机号"></el-table-column>
-                <el-table-column prop="loan_amount" label="借款金额"></el-table-column>
-                <el-table-column prop="into_amount" label="放款金额"></el-table-column>
-                <el-table-column prop="rate" label="费率"></el-table-column>
-                <el-table-column prop="loan_at" label="放款时间"></el-table-column>
-                <el-table-column prop="repaymen_at" label="该还款日期"></el-table-column>
-                <el-table-column prop="return_at" label="实际还款时间"></el-table-column>
-                <el-table-column prop="state" label="审核状态"></el-table-column>
-                 <el-table-column label="操作" width="230">
+                <el-table-column prop="customer.name" label="用户昵称"></el-table-column>
+                <el-table-column prop="loan_amount" label="订单金额"></el-table-column>
+                <el-table-column prop="into_amount" label="课程名称"></el-table-column>
+                <el-table-column prop="loan_at" label="课程讲师"></el-table-column>
+                <el-table-column prop="repaymen_at" label="订单类型"></el-table-column>
+                <el-table-column label="操作" width="230">
                    <template slot-scope="scope">
                       <el-button
                         size="mini"
                         type="primary"
-                        @click="checkInfo(scope.row)" v-show="scope.row.status == 0|| status == 2">审核</el-button>
-                        <el-button
-                        size="mini"
-                        type="primary"
-                        @click="setUserState(scope.row,3)" v-show="scope.row.status == 1">放款</el-button>
-                        <el-button
-                        size="mini"
-                        type="primary"
-                        @click="setUserState(scope.row,4)" v-show="scope.row.status == 3">还款</el-button>
-                      <el-button
-                        size="mini"
-                        type="primary"
-                        @click="ordreDetailPage(scope.row)">详情</el-button>
-                      <el-button
-                        size="mini"
-                        type="primary"
-                        @click="delayOrder(scope.row)" v-show="scope.row.status == 3">延期</el-button>
+                        @click="checkInfo(scope.row)">详情</el-button>
                     </template>
                 </el-table-column>
             </el-table>
-            <el-button
-            size="mini"
-            type="primary"
-            @click="sendMessage" style="margin-top:10px;">群发信息</el-button>
             <div class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" :page-size="pageSize" layout="prev, pager, next" :total="total">
                 </el-pagination>
@@ -149,19 +112,10 @@
                     name: '全部'
                 },{
                     id: 0,
-                    name: '待审核'
+                    name: '自然订单'
                 },{
                     id: 1,
-                    name: '审核通过待放款'
-                },{
-                    id: 2,
-                    name: '审核不通过'
-                },{
-                    id: 3,
-                    name: '已放款'
-                },{
-                   id: 4,
-                   name: '已还款' 
+                    name: '分销订单'
                 }],
                 searchName: '',
                 searchMobile: '',
@@ -245,49 +199,10 @@
                   size: this.pageSize,
                   page: this.cur_page
                 }
-                if(this.startTime){
-                  data.loan_at_start = this.startTime[0]
-                  data.loan_at_end = this.startTime[1]
-                }
-                if(this.endTime){
-                  data.return_at_start = this.endTime[0]
-                  data.return_at_end = this.endTime[1]
-                }
-                if(this.searchName){
-                    data.name = this.searchName
-                }
-                if(this.searchMobile){
-                    data.phone = this.searchMobile
-                }
-                if(this.status !== ''){
-                    data.status = this.status
-                }
-                apiOrderList(data)
-                .then((res) => {
-                    console.log('res-order',res)
-                    this.tableData = res.data.list
-                    this.tableData.forEach(function(item){
-                      item.customer.name = item.customer.name?item.customer.name:item.customer.phone
-                      switch (item.status) {
-                          case 0:
-                              item.state = '待审核';
-                              break;
-                          case 1:
-                              item.state = '审核通过待放款';
-                              break;
-                          case 2:
-                              item.state = '审核不通过';
-                              break;
-                          case 3:
-                              item.state = '已放款';
-                              break;
-                          default:
-                              item.state = '已还款';
-                              break;
-                      }
-                    })
-                    this.total = res.data.total
-                })
+                // apiOrderList(data)
+                // .then((res) => {
+                //   this.total = res.data.total
+                // })
             },
             handleChange(value) {
               this.delayFee = this.delayAccount*value
@@ -371,9 +286,9 @@
               })
             },
             checkInfo(row){
-              console.log('row',row)
-              this.updateId = row.id
-              this.dialogUpdate = true
+              // console.log('row',row)
+              // this.updateId = row.id
+              // this.dialogUpdate = true
             },
             ordreDetailPage(row){
                this.$router.push({
