@@ -22,10 +22,10 @@
               <!-- <el-button type="primary" plain>导出</el-button> -->
             </div>
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
-                <el-table-column prop="id" label="用户id"></el-table-column>
-                <el-table-column prop="created_at" label="注册时间"></el-table-column>
-                <el-table-column prop="name" label="用户昵称"></el-table-column>
-                <el-table-column prop="id_card_count" label="用户头像"></el-table-column>
+                <el-table-column prop="user_id" label="用户id"></el-table-column>
+                <el-table-column prop="create_time" label="注册时间"></el-table-column>
+                <el-table-column prop="username" label="用户昵称"></el-table-column>
+                <el-table-column prop="avatar_url" label="用户头像"></el-table-column>
                 <el-table-column prop="phone_list_count" label="是否分销"></el-table-column>
                 <el-table-column prop="ali_pay_count" label="上级用户"></el-table-column>
             </el-table>
@@ -35,58 +35,15 @@
             </div>
         </div>
 
-
-        <!-- 审核信息 -->
-        <el-dialog title="审核信息" :visible.sync="dialogUpdate" width="500px">
-            <el-form ref="form" :model="form" label-width="100px">
-                <!-- <el-form-item label="返回app意见">
-                    <el-input v-model="form.remark" type="textarea"></el-input>
-                    <p>(审核不通过时填写)</p>
-                </el-form-item> -->
-                <el-form-item label="不通过">
-                    <el-input v-model="form.content" type="textarea" placeholder="请填写不通过原因"></el-input>
-                    <p>(审核不通过时填写)</p>
-                </el-form-item>
-                <el-form-item label="借款费率">
-                    <el-input-number v-model="form.rate" :min="1" :max="100" label="借款费率"></el-input-number>
-                    <p>(审核通过时填写)</p>
-                </el-form-item>
-                <el-form-item label="放款额度">
-                    <el-input v-model="form.quota" style="width:160px;"></el-input>
-                    <span style="margin-left:5px;">元</span>
-                    <p>(审核通过时填写)</p>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button type="danger" @click="checkAccount(2)">不通过</el-button>
-                <el-button type="primary" @click="checkAccount(1)">通过</el-button>
-            </span>
-        </el-dialog>
-
     </div>
 </template>
 
 <script>
-    import { apiUserList,apiAccountCheck } from '@/service'
+    import { apiUserList } from '@/service'
     export default {
         data() {
             return {
-                tableData: [{
-                  name: 'aaa'
-                }],
-                options: [{
-                    id: '',
-                    name: '全部'
-                },{
-                    id: 0,
-                    name: '未认证'
-                },{
-                    id: 1,
-                    name: '已完成认证'
-                },{
-                    id: 2,
-                    name: '审核不通过'
-                }],
+                tableData: [],
                 startTime: '',
                 endTime: '',
                 status: '',
@@ -95,18 +52,7 @@
                 cur_page: 1,
                 pageSize: 10,
                 total: 0,
-                select_cate: '',
-                select_word: '',
-                is_search: false,
-                editVisible: false,
-                dialogUpdate: false,
-                form: {
-                    remark: '审核不通过',
-                    content: '',
-                    rate: 10,
-                    quota: ''
-                },
-                updateId: ''
+                is_search: false
             }
         },
         created() {
@@ -133,55 +79,11 @@
                   size: this.pageSize,
                   page: this.cur_page 
                 }
-                // apiUserList(data)
-                // .then((res) => {
-                //     this.total = res.data.total
-                // })
-            },
-            handleEdit(index,row){
-              this.dialogUpdate = true
-              this.updateId = row.id
-            },
-            checkAccount(status){
-              let data = {
-                customer_id: this.updateId,
-                status: status
-              }
-              if(status == 1){
-                if(this.form.quota == ''){
-                  this.$message.error('审核通过需填写额度信息再提交')
-                  return
-                }
-                if(this.form.rate == ''){
-                  return
-                  this.$message.error('审核通过需填写费率再提交')
-                }
-                data.quota = this.form.quota
-                data.rate = this.form.rate
-              }
-              if(status == 2){
-                if(this.form.remark == ''){
-                  this.$message.error('审核不通过需填写返回app意见再提交')
-                  return
-                }
-                if(this.form.content == ''){
-                  this.$message.error('审核不通过需填写后台意见再提交')
-                  return
-                }
-                data.front_remark = this.form.remark
-                data.back_remark = this.form.content
-              }
-              apiAccountCheck(data)
-              .then((res)=>{
-                console.log('check',res)
-                if(res.code == 200){
-                   this.$message.success('操作成功')
-                   this.dialogUpdate = false
-                   this.getData()
-                }else{
-                  this.$message.error(res.message)
-                }
-              })
+                apiUserList(data)
+                .then((res) => {
+                    this.tableData = res.data.list
+                    this.total = res.data.totalRows
+                })
             },
             accountDetailPage(index,row){
               this.$router.push({

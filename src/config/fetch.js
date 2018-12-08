@@ -5,7 +5,7 @@ import qs from 'qs'
 // http request 拦截器
 axios.interceptors.request.use((config) => {
   if (localStorage.getItem('admin-token')) {
-    config.headers['Authorization'] = `bearer ${localStorage.getItem('admin-token')}`
+    config.headers['Authorization'] = `${localStorage.getItem('admin-token')}`
   }
   if (config.method === 'post') {
     config.data = qs.stringify(config.data)

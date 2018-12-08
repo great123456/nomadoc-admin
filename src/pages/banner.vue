@@ -11,11 +11,12 @@
               <el-button type="primary" plain @click="addBanner">添加banner</el-button>
             </div>
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
-                <el-table-column label="banner">
+                 <el-table-column prop="id" label="id"></el-table-column>
+                 <el-table-column label="banner">
                   <template slot-scope="props">
-                    <img :src="props.row.img" alt="" style="width:100px;height:auto;cursor:pointer;" @click="checkImage(props.row.img)">
+                    <img :src="props.row.url" alt="" style="width:100px;height:auto;cursor:pointer;" @click="checkImage(props.row.url)">
                   </template>
-                </el-table-column>
+                 </el-table-column>
                  <el-table-column label="操作">
                    <template slot-scope="scope">
                       <el-button
@@ -26,16 +27,19 @@
                  </el-table-column>
             </el-table>
         </div>
+        
+        <div class="pagination">
+            <el-pagination background @current-change="handleCurrentChange" :page-size="pageSize" layout="prev, pager, next" :total="total">
+            </el-pagination>
+        </div>
 
         <!-- 编辑弹出框 -->
-        <el-dialog title="上传图片" :visible.sync="addVisible" width="500px">
+        <el-dialog title="添加banner" :visible.sync="addVisible" width="500px">
             <el-upload
               class="upload-demo"
-              action="/api/admin/upload/img"
-              :on-change="handleChangeMain"
-              :on-remove="handleRemoveMain"
-              name="img"
-              multiple
+              action="/admin/banner/save"
+              :on-success="handleUploadSuccess"
+              name="file"
               :limit="1"
               :headers="token"
               :file-list="fileList"
@@ -43,32 +47,25 @@
               <el-button size="small" type="primary">点击上传</el-button>
               <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2M</div>
             </el-upload>
-            <span slot="footer" class="dialog-footer">
+            <!-- <span slot="footer" class="dialog-footer">
                 <el-button @click="addVisible = false">取 消</el-button>
                 <el-button type="primary" @click="saveEdit">添加</el-button>
-            </span>
+            </span> -->
         </el-dialog>
 
-        <!-- 删除提示框 -->
-        <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
-            <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="delVisible = false">取 消</el-button>
-                <el-button type="primary" @click="deleteRow">确 定</el-button>
-            </span>
-        </el-dialog>
     </div>
 </template>
 
 <script>
+    import { apiBannerList, apiBannerDelete, apiBannerSave } from '@/service'
     export default {
         data() {
             return {
-                tableData: [{
-                 img: 'aaa'
-                }],
+                tableData: [],
                 fileList: [],
                 cur_page: 1,
+                pageSize: 10,
+                total: 0,
                 fileName:'',
                 schoolId:'',
                 addVisible: false,
@@ -83,7 +80,7 @@
         computed: {
            token(){
              return {
-               Authorization: `bearer ${localStorage.getItem('admin-token')}`
+               Authorization: `${localStorage.getItem('admin-token')}`
              }
            }
         },
@@ -93,11 +90,14 @@
                 this.cur_page = val;
                 this.getData();
             },
-            handleRemoveMain(file, fileList) {
-                this.fileList = fileList
-            },
-            handleChangeMain(file, fileList){
-              this.fileList = fileList
+            handleUploadSuccess(response, file, fileList) {
+                if(response.code == 200) {
+                  this.$message.success('添加成功')
+                  this.addVisible = false
+                  this.getData()
+                }else{
+                  this.$message.error(response.msg)
+                }
             },
             selectChange(){
               this.getData()
@@ -107,13 +107,14 @@
             },
             getData(){
               const self = this
-              // apiBannerList({
-              //   type: this.bannerType,
-              //   page: this.cur_page
-              // })
-              // .then((res) => {
-              //     self.tableData = res.data.list
-              // })
+              apiBannerList({
+                limit: this.pageSize,
+                page: this.cur_page
+              })
+              .then((res) => {
+                  this.tableData = res.data.list
+                  this.total = res.data.totalRows
+              })
             },
             addBanner(){
               this.addVisible = true
@@ -122,6 +123,7 @@
             // 添加banner
             saveEdit() {
               const self = this
+              apiBannerSave()
             },
             handleDelete(row){
                this.deleteId = row.id
@@ -140,7 +142,17 @@
             },
             // 确定删除
             deleteRow(){
-              
+              apiBannerDelete({
+                id: this.deleteId
+              })
+              .then((res) => {
+                if(res.code == 200){
+                  this.$message.success('删除成功')
+                  this.getData()
+                }else {
+                  this.$message.error(res.msg)
+                }
+              })
             }
         }
     }

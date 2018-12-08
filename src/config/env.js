@@ -1,5 +1,5 @@
 
-let API_PATH = '/api/admin'
+let API_PATH = '/admin'
 
 
 if (process.env.NODE_ENV === 'development') {

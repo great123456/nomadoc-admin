@@ -11,11 +11,18 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/api':{
-          target:'https://walletapi.hxgtech.com/api',
+      '/admin':{
+          target:'https://jiang.bidou88.cn/admin',
           changeOrigin:true,
           pathRewrite:{
-              '/api':''
+              '/admin':''
+          }
+      },
+      '/proxy-api': {
+         target:'http://ht.digitwater.com:8090',
+         changeOrigin:true,
+         pathRewrite:{
+              '/proxy-api':''
           }
       },
       '/ms':{

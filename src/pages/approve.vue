@@ -19,16 +19,20 @@
             </div>
             <el-table :data="tableData" border style="width: 100%" ref="multipleTable">
                 <el-table-column prop="id" label="课程id"></el-table-column>
-                <el-table-column prop="created_at" label="创建日期"></el-table-column>
-                <el-table-column prop="name" label="课程名称"></el-table-column>
-                <el-table-column prop="phone" label="课程讲师"></el-table-column>
-                <el-table-column prop="id_card_count" label="课程费用"></el-table-column>
-                <el-table-column prop="mobile_carrier_count" label="分销价格"></el-table-column>
-                <el-table-column prop="mobile_carrier_count" label="报名人数"></el-table-column>
-                <el-table-column prop="phone_list_count" label="课程介绍"></el-table-column>
-                <el-table-column prop="ali_pay_count" label="课程图片"></el-table-column>
-                <el-table-column prop="is_auth" label="视频链接"></el-table-column>
-                <el-table-column label="操作" width="200">
+                <el-table-column prop="create_time" label="创建日期"></el-table-column>
+                <el-table-column prop="course_title" label="课程标题"></el-table-column>
+                <el-table-column prop="course_lecturer" label="课程讲师"></el-table-column>
+                <el-table-column prop="course_ticket_price" label="课程费用"></el-table-column>
+                <el-table-column prop="course_share_money" label="分销价格"></el-table-column>
+                <el-table-column prop="view_numbers" label="报名人数"></el-table-column>
+                <el-table-column prop="course_introduce" label="课程介绍"></el-table-column>
+                <el-table-column label="课程图片" width="130">
+                  <template slot-scope="props">
+                    <img :src="props.row.course_img" alt="" style="width:100px;height:auto;cursor:pointer;" @click="checkImage(props.row.course_img)">
+                  </template>
+                </el-table-column>
+                <el-table-column prop="course_film" label="视频链接"></el-table-column>
+                <el-table-column label="操作" width="150">
                    <template slot-scope="scope">
                       <el-button
                          size="mini"
@@ -108,13 +112,11 @@
 </template>
 
 <script>
-    import { apiUserList,apiAccountCheck } from '@/service'
+    import { apiCourseList } from '@/service'
     export default {
         data() {
             return {
-                tableData: [{
-                  name: 'aaa'
-                }],
+                tableData: [],
                 fileList: [],
                 status: 1,
                 searchName: '',
@@ -154,6 +156,9 @@
             handleRemoveMain(){
 
             },
+            checkImage(url){
+              window.open(url)
+            },
             // 分页导航
             handleCurrentChange(val) {
                 this.cur_page = val;
@@ -164,13 +169,16 @@
             },
             getData() {
                 const data = {
-                  size: this.pageSize,
+                  courseName: this.searchName,
+                  teacher: this.searchMobile,
+                  limit: this.pageSize,
                   page: this.cur_page 
                 }
-                // apiUserList(data)
-                // .then((res) => {
-                //     this.total = res.data.total
-                // })
+                apiCourseList(data)
+                .then((res) => {
+                    this.tableData = res.data.list
+                    this.total = res.data.totalRows
+                })
             },
             handleEdit(index,row){
               this.dialogUpdate = true

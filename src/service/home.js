@@ -2,41 +2,30 @@
 import fetch from '../config/fetch'
 import { API_PATH } from '../config/env'
 
-// 用户注册
-export const apiUserRegister = (obj) => fetch(API_PATH + '/user/register', obj, 'POST')
-
-//用户信息
-export const apiUserInfo = (obj) => fetch(API_PATH + '/user/user-info', obj, 'GET')
 
 //登录
-export const apiUserLogin = (obj) => fetch(API_PATH + '/user/login', obj, 'POST')
+export const apiUserLogin = (obj) => fetch(API_PATH + '/login', obj, 'GET')
 
 //退出登录
-export const apiUserLoginOut = (obj) => fetch(API_PATH + '/user/logout', obj, 'POST')
+export const apiUserLoginOut = (obj) => fetch(API_PATH + '/logout', obj, 'GET')
 
-//借款列表
-export const apiOrderList = (obj) => fetch(API_PATH + '/loan/list', obj, 'GET')
+// 重置密码
+export const apiUserUpdatePassword = (obj) => fetch(API_PATH + '/resetpass', obj, 'POST')
 
-//客户列表
-export const apiUserList = (obj) => fetch(API_PATH + '/customer/list', obj, 'GET')
+//课程列表
+export const apiCourseList = (obj) => fetch(API_PATH + '/course', obj, 'GET')
+
+//用户列表
+export const apiUserList = (obj) => fetch(API_PATH + '/user', obj, 'GET')
+
+// banner列表
+export const apiBannerList = (obj) => fetch(API_PATH + '/banner', obj, 'GET')
+
+// 删除banner
+export const apiBannerDelete = (obj) => fetch(API_PATH + '/banner/delete', obj, 'POST')
+
+// 添加banner
+export const apiBannerSave = (obj) => fetch(API_PATH + '/banner/save', obj, 'POST')
 
 //客户详情
 export const apiAccountDetail = (obj) => fetch(API_PATH + '/customer/detail', obj, 'GET')
-
-//审核
-export const apiAccountCheck = (obj) => fetch(API_PATH + '/customer/auths', obj, 'POST')
-
-//用户信息（包含借款信息）
-export const apiOrderDetail = (obj) => fetch(API_PATH + '/loan/customer-detail', obj, 'GET')
-
-//审核（更改状态）
-export const apiOrderCheck = (obj) => fetch(API_PATH + '/loan/change-status', obj, 'POST')
-
-//延期还款
-export const apiOrderDelay = (obj) => fetch(API_PATH + '/loan/delay', obj, 'POST')
-
-//短信
-export const apiOrdersendMessage = (obj) => fetch(API_PATH + '/loan/send', obj, 'POST')
-
-//重置密码
-export const apiUserUpdatePassword = (obj) => fetch(API_PATH + '/user/reset', obj, 'POST')

@@ -75,16 +75,15 @@
             handleCommand(command) {
                 if(command == 'loginout'){
                     this.$router.push('/login');
-                    // localStorage.removeItem('ms_username')
-                    // apiUserLoginOut()
-                    // .then((res)=>{
-                    //     if(res.code == 200){
-                    //         this.$message.success('退出登录成功');
-                    //         this.$router.push('/login');
-                    //     }else{
-                    //         this.$message.error('退出登录失败');
-                    //     }
-                    // })
+                    apiUserLoginOut()
+                    .then((res)=>{
+                        if(res.code == 200){
+                            this.$message.success('退出登录成功');
+                            this.$router.push('/login');
+                        }else{
+                            this.$message.error('退出登录失败');
+                        }
+                    })
                 }
                 if(command == 'update'){
                    this.updateDialog = true
@@ -95,19 +94,19 @@
                 this.$message.error('密码不能为空')
                 return
               }
-              // apiUserUpdatePassword({
-              //   password:this.form.password,
-              //   new_password: this.form.new_password,
-              //   new_password_confirmation: this.form.new_password_confirmation
-              // })
-              // .then((res)=>{
-              //   if(res.code == 200){
-              //       this.$message.success('重置密码成功')
-              //       this.updateDialog = false
-              //   }else{
-              //       this.$message.error(res.message)
-              //   }
-              // })
+              apiUserUpdatePassword({
+                oldpasswd:this.form.password,
+                newpasswd: this.form.new_password,
+                repasswd: this.form.new_password_confirmation
+              })
+              .then((res)=>{
+                if(res.code == 200){
+                    this.$message.success('重置密码成功')
+                    this.updateDialog = false
+                }else{
+                    this.$message.error(res.msg)
+                }
+              })
             },
             // 侧边栏折叠
             collapseChage(){
