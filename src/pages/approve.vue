@@ -41,7 +41,7 @@
                       <el-button
                          size="mini"
                          type="danger"
-                         @click="accountDetailPage(scope.$index, scope.row)">删除</el-button>
+                         @click="deleteCourse(scope.$index, scope.row)">删除</el-button>
                       <el-button
                     </template>
                 </el-table-column>
@@ -56,17 +56,17 @@
         <!-- 添加课程 -->
         <el-dialog title="添加课程" :visible.sync="dialogAdd" width="500px">
             <el-form ref="form" :model="form" label-width="100px">
-                <el-form-item label="课程名称">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="课程讲师">
+                    <el-input v-model="form.course_lecturer"></el-input>
                 </el-form-item>
                 <el-form-item label="课程标题">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
-                <el-form-item label="课程价格">
-                    <el-input v-model="form.price"></el-input>
+                <el-form-item label="课程价格(元)">
+                    <el-input v-model.number="form.price"></el-input>
                 </el-form-item>
-                <el-form-item label="分销价格">
-                    <el-input v-model="form.price"></el-input>
+                <el-form-item label="分销价格(元)">
+                    <el-input v-model.number="form.course_share_money"></el-input>
                 </el-form-item>
                 <el-form-item label="课程介绍">
                     <el-input v-model="form.remark" type="textarea"></el-input>
@@ -75,10 +75,11 @@
                 <el-form-item label="课程图片">
                   <el-upload
                     class="upload-demo"
-                    action="/api/admin/upload/img"
-                    :on-change="handleChangeMain"
+                    action="/admin/course/uploadimg"
+                    :on-success="handleUploadSuccess"
                     :on-remove="handleRemoveMain"
-                    name="img"
+                    name="file"
+                    :headers="token"
                     multiple
                     :limit="1"
                     :file-list="fileList"
@@ -90,21 +91,22 @@
                 <el-form-item label="课程视频">
                   <el-upload
                     class="upload-demo"
-                    action="/api/admin/upload/img"
-                    :on-change="handleChangeMain"
+                    action="/admin/course/uploadfilm"
+                    :on-success="handleChangeMain"
                     :on-remove="handleRemoveMain"
-                    name="img"
+                    name="file"
+                    :headers="token"
                     multiple
                     :limit="1"
-                    :file-list="fileList"
-                    list-type="picture">
+                    list-type="picture"
+                    :file-list="fileList">
                     <el-button size="small" type="primary">上传课程视频</el-button>
                   </el-upload>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogAdd = false">取消</el-button>
-                <el-button type="primary">添加</el-button>
+                <el-button type="primary" @click="saveCourse">添加</el-button>
             </span>
         </el-dialog>
 
@@ -112,7 +114,7 @@
 </template>
 
 <script>
-    import { apiCourseList } from '@/service'
+    import { apiCourseList, apiAddCourse, apiDeleteCourse } from '@/service'
     export default {
         data() {
             return {
@@ -134,7 +136,11 @@
                 form: {
                     remark: '',
                     name: '',
-                    price: 0
+                    price: 0,
+                    course_share_money: 0,
+                    course_lecturer: '',
+                    course_film: '',
+                    course_img: ''
                 },
                 updateId: ''
             }
@@ -145,13 +151,27 @@
         computed: {
             token(){
              return {
-               Authorization: `bearer ${localStorage.getItem('admin-token')}`
+               Authorization: `${localStorage.getItem('admin-token')}`
              }
            }
         },
         methods: {
-            handleChangeMain(){
-
+            handleUploadSuccess(res, file) {
+              console.log('img',res)
+              if (res.code == 200) {
+                this.$message.success('上传成功')
+                this.form.course_img = res.data.url
+              }else {
+                this.$message.error(res.msg)
+              }
+            },
+            handleChangeMain(res, file){
+              if (res.code == 200) {
+                this.$message.success('上传成功')
+                this.form.course_film = res.data.url
+              }else {
+                this.$message.error(res.msg)
+              }
             },
             handleRemoveMain(){
 
@@ -187,8 +207,53 @@
             checkAccount(status){
   
             },
+            deleteCourse(index,row) { // 删除课程
+              this.$confirm('确定删除当前课程?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }).then(() => {
+                apiDeleteCourse({
+                  id: row.id
+                })
+                .then((res) => {
+                  if (res.code == 200) {
+                     this.$message.success('删除成功')
+                     this.getData()
+                  }else{
+                    this.$message.error(res.msg)
+                  }
+                })
+              }).catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '已取消删除'
+                });          
+              })
+            },
             addCourse(){ // 添加课程
               this.dialogAdd = true
+            },
+            saveCourse() {
+               apiAddCourse({
+                 course_title: this.form.name,
+                 course_film: this.form.course_film,
+                 course_img: this.form.course_img,
+                 course_ticket_price: this.form.price,
+                 course_type: 2,
+                 course_lecturer: this.form.course_lecturer,
+                 course_share_money: this.form.course_share_money,
+                 course_introduce: this.form.remark
+               })
+               .then((res) => {
+                 if (res.code == 200) {
+                   this.$message.success('添加成功')
+                   this.dialogAdd = false
+                   this.getData()
+                 }else {
+                  this.$message.error(res.msg)
+                 }
+               })
             },
             accountDetailPage(index,row){
               this.$router.push({

@@ -15,6 +15,18 @@ export const apiUserUpdatePassword = (obj) => fetch(API_PATH + '/resetpass', obj
 //课程列表
 export const apiCourseList = (obj) => fetch(API_PATH + '/course', obj, 'GET')
 
+// 添加课程
+export const apiAddCourse = (obj) => fetch(API_PATH + '/course/add', obj, 'POST')
+
+// 删除课程
+export const apiDeleteCourse = (obj) => fetch(API_PATH + '/course/delete', obj, 'POST')
+
+// 课程详情
+export const apiCourseDetail = (obj) => fetch(API_PATH + '/detail', obj, 'POST')
+
+// 修改课程
+export const apiCourseUpdate = (obj) => fetch(API_PATH + '/course/update', obj, 'POST')
+
 //用户列表
 export const apiUserList = (obj) => fetch(API_PATH + '/user', obj, 'GET')
 
