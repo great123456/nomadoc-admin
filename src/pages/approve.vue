@@ -31,7 +31,11 @@
                     <img :src="props.row.course_img" alt="" style="width:100px;height:auto;cursor:pointer;" @click="checkImage(props.row.course_img)">
                   </template>
                 </el-table-column>
-                <el-table-column prop="course_film" label="视频链接"></el-table-column>
+                <el-table-column prop="course_film" label="视频链接">
+                  <template slot-scope="props">
+                    <span @click="checkImage(props.row.course_film)" style="cursor:pointer;color:#00D1B2;">{{props.row.course_film}}</span>
+                  </template>
+                </el-table-column>
                 <el-table-column label="操作" width="150">
                    <template slot-scope="scope">
                       <el-button
@@ -109,16 +113,74 @@
                 <el-button type="primary" @click="saveCourse">添加</el-button>
             </span>
         </el-dialog>
+        
+        <!-- 添加课程 -->
+        <el-dialog title="课程编辑" :visible.sync="dialogUpdate" width="500px">
+            <el-form ref="form" :model="form" label-width="100px">
+                <el-form-item label="课程讲师">
+                    <el-input v-model="form.course_lecturer"></el-input>
+                </el-form-item>
+                <el-form-item label="课程标题">
+                    <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="课程价格(元)">
+                    <el-input v-model.number="form.price"></el-input>
+                </el-form-item>
+                <el-form-item label="分销价格(元)">
+                    <el-input v-model.number="form.course_share_money"></el-input>
+                </el-form-item>
+                <el-form-item label="课程介绍">
+                    <el-input v-model="form.remark" type="textarea"></el-input>
+                    <p>(审核不通过时填写)</p>
+                </el-form-item>
+                <el-form-item label="课程图片">
+                  <el-upload
+                    class="upload-demo"
+                    action="/admin/course/uploadimg"
+                    :on-success="handleUploadSuccess"
+                    :on-remove="handleRemoveMain"
+                    name="file"
+                    :headers="token"
+                    multiple
+                    :limit="1"
+                    :file-list="imgList"
+                    list-type="picture">
+                    <el-button size="small" type="primary">上传课程图片</el-button>
+                  </el-upload>
+                </el-form-item>
+                
+                <el-form-item label="课程视频">
+                  <el-upload
+                    class="upload-demo"
+                    action="/admin/course/uploadfilm"
+                    :on-success="handleChangeMain"
+                    :on-remove="handleRemoveMain"
+                    name="file"
+                    :headers="token"
+                    multiple
+                    :limit="1"
+                    list-type="picture"
+                    :file-list="fileList">
+                    <el-button size="small" type="primary">上传课程视频</el-button>
+                  </el-upload>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogUpdate = false">取消</el-button>
+                <el-button type="primary" @click="uploadCourse">确定</el-button>
+            </span>
+        </el-dialog>
 
     </div>
 </template>
 
 <script>
-    import { apiCourseList, apiAddCourse, apiDeleteCourse } from '@/service'
+    import { apiCourseList, apiAddCourse, apiDeleteCourse, apiCourseDetail, apiCourseUpdate } from '@/service'
     export default {
         data() {
             return {
                 tableData: [],
+                imgList: [],
                 fileList: [],
                 status: 1,
                 searchName: '',
@@ -201,11 +263,33 @@
                 })
             },
             handleEdit(index,row){
+              console.log('row',row)
               this.dialogUpdate = true
               this.updateId = row.id
+              this.form.remark = row.course_introduce
+              this.form.name = row.course_title
+              this.form.price = row.course_ticket_price
+              this.form.course_share_money = row.course_share_money
+              this.form.course_lecturer = row.course_lecturer
+              this.form.course_img = row.course_img
+              this.form.course_film = row.course_film
+              this.imgList = [{
+                name: 'png',
+                url: row.course_img
+              }]
+              this.fileList = [{
+                name: 'mp4',
+                url: row.course_film
+              }]
+              // this.gerCourseDetail()
             },
-            checkAccount(status){
-  
+            gerCourseDetail(){
+              apiCourseDetail({
+                id: this.updateId
+              })
+              .then((res) => {
+                console.log('detail',res)
+              })
             },
             deleteCourse(index,row) { // 删除课程
               this.$confirm('确定删除当前课程?', '提示', {
@@ -231,11 +315,9 @@
                 });          
               })
             },
-            addCourse(){ // 添加课程
-              this.dialogAdd = true
-            },
-            saveCourse() {
-               apiAddCourse({
+            uploadCourse() { // 编辑课程
+              const data = {
+                 id: this.updateId,
                  course_title: this.form.name,
                  course_film: this.form.course_film,
                  course_img: this.form.course_img,
@@ -244,7 +326,34 @@
                  course_lecturer: this.form.course_lecturer,
                  course_share_money: this.form.course_share_money,
                  course_introduce: this.form.remark
+               }
+               apiCourseUpdate(data)
+               .then((res) => {
+                 if (res.code == 200) {
+                   this.$message.success('修改成功')
+                   this.dialogUpdate = false
+                   this.getData()
+                 }else {
+                  this.$message.error(res.msg)
+                 }
                })
+            },
+            addCourse(){ // 添加课程
+              this.dialogAdd = true
+              this.updateId = ''
+            },
+            saveCourse() {
+              const data = {
+                 course_title: this.form.name,
+                 course_film: this.form.course_film,
+                 course_img: this.form.course_img,
+                 course_ticket_price: this.form.price,
+                 course_type: 2,
+                 course_lecturer: this.form.course_lecturer,
+                 course_share_money: this.form.course_share_money,
+                 course_introduce: this.form.remark
+               }
+               apiAddCourse(data)
                .then((res) => {
                  if (res.code == 200) {
                    this.$message.success('添加成功')

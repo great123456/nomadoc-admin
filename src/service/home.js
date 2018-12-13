@@ -22,7 +22,7 @@ export const apiAddCourse = (obj) => fetch(API_PATH + '/course/add', obj, 'POST'
 export const apiDeleteCourse = (obj) => fetch(API_PATH + '/course/delete', obj, 'POST')
 
 // 课程详情
-export const apiCourseDetail = (obj) => fetch(API_PATH + '/detail', obj, 'POST')
+export const apiCourseDetail = (obj) => fetch(API_PATH + '/course/detail', obj, 'POST')
 
 // 修改课程
 export const apiCourseUpdate = (obj) => fetch(API_PATH + '/course/update', obj, 'POST')
