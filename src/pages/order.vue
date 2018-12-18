@@ -33,20 +33,20 @@
             </div> -->
             <el-table :data="tableData" border style="width: 100%">
                 <el-table-column prop="created_at" label="订单日期" sortable></el-table-column>
-                <el-table-column prop="order_no" label="订单编号"></el-table-column>
-                <el-table-column prop="customer.name" label="用户昵称"></el-table-column>
-                <el-table-column prop="loan_amount" label="订单金额"></el-table-column>
-                <el-table-column prop="into_amount" label="课程名称"></el-table-column>
-                <el-table-column prop="loan_at" label="课程讲师"></el-table-column>
-                <el-table-column prop="repaymen_at" label="订单类型"></el-table-column>
-                <el-table-column label="操作" width="230">
+                <el-table-column prop="order_sn" label="订单编号"></el-table-column>
+                <el-table-column prop="user_id.username" label="用户昵称"></el-table-column>
+                <el-table-column prop="total_amount" label="订单金额"></el-table-column>
+                <el-table-column prop="roles_to_course.course_title" label="课程名称"></el-table-column>
+                <el-table-column prop="roles_to_course.course_lecturer" label="课程讲师"></el-table-column>
+                <el-table-column prop="is_distribut" label="订单类型"></el-table-column>
+                <!-- <el-table-column label="操作" width="230">
                    <template slot-scope="scope">
                       <el-button
                         size="mini"
                         type="primary"
                         @click="ordreDetailPage(scope.row)">详情</el-button>
                     </template>
-                </el-table-column>
+                </el-table-column> -->
             </el-table>
             <div class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" :page-size="pageSize" layout="prev, pager, next" :total="total">
@@ -58,7 +58,7 @@
 </template>
 
 <script>
-    import { apiCourseList } from '@/service'
+    import { apiOrderList } from '@/service'
     export default {
         data() {
             return {
@@ -80,9 +80,7 @@
                 searchName: '',
                 searchMobile: '',
                 typeId: 1,
-                tableData: [{
-                  created_at: '2018-10-03'
-                }],
+                tableData: [],
                 cur_page: 1,
                 pageSize: 10,
                 total: 0,
@@ -117,12 +115,24 @@
               this.getData()
             },
             getData() {
+                let startTime = ''
+                let endTime = ''
+                if (this.startTime) {
+                  startTime = this.startTime[0]
+                  endTime = this.startTime[1]
+                }
                 const data = {
+                  orderType: this.status,
+                  startTime: startTime,
+                  endTime: endTime,
+                  userName: this.searchName,
                   limit: this.pageSize,
                   page: this.cur_page
                 }
-                apiCourseList(data)
+                apiOrderList(data)
                 .then((res) => {
+                  console.log('res',res)
+                  this.tableData = res.data.list
                   this.total = res.data.total
                 })
             },

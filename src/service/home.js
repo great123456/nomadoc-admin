@@ -41,3 +41,9 @@ export const apiBannerSave = (obj) => fetch(API_PATH + '/banner/save', obj, 'POS
 
 //客户详情
 export const apiAccountDetail = (obj) => fetch(API_PATH + '/customer/detail', obj, 'GET')
+
+// 课程分类
+export const apiAccountCategory = (obj) => fetch(API_PATH + '/course/category', obj, 'GET')
+
+// 订单列表
+export const apiOrderList = (obj) => fetch(API_PATH + '/order/list', obj, 'GET')

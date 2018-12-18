@@ -22,6 +22,11 @@
                 <el-table-column prop="create_time" label="创建日期"></el-table-column>
                 <el-table-column prop="course_title" label="课程标题"></el-table-column>
                 <el-table-column prop="course_lecturer" label="课程讲师"></el-table-column>
+                <el-table-column label="是否免费">
+                  <template slot-scope="props">
+                    <span>{{props.course_type == 1 ? '免费':'收费'}}</span>
+                  </template>
+                </el-table-column>
                 <el-table-column prop="course_ticket_price" label="课程费用"></el-table-column>
                 <el-table-column prop="course_share_money" label="分销价格"></el-table-column>
                 <el-table-column prop="view_numbers" label="报名人数"></el-table-column>
@@ -65,6 +70,22 @@
                 </el-form-item>
                 <el-form-item label="课程标题">
                     <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="课程分类">
+                    <el-select v-model="form.course_category" placeholder="请选择课程分类" style="width:100%;">
+                      <el-option
+                        v-for="item in categoryList"
+                        :key="item.id"
+                        :label="item.cate_name"
+                        :value="item.id">
+                      </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="是否免费">
+                  <el-switch
+                    v-model="form.course_type"
+                    active-color="#13ce66">
+                  </el-switch>
                 </el-form-item>
                 <el-form-item label="课程价格(元)">
                     <el-input v-model.number="form.price"></el-input>
@@ -114,7 +135,7 @@
             </span>
         </el-dialog>
         
-        <!-- 添加课程 -->
+        <!-- 编辑课程 -->
         <el-dialog title="课程编辑" :visible.sync="dialogUpdate" width="500px">
             <el-form ref="form" :model="form" label-width="100px">
                 <el-form-item label="课程讲师">
@@ -122,6 +143,22 @@
                 </el-form-item>
                 <el-form-item label="课程标题">
                     <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="课程分类">
+                    <el-select v-model="form.course_category" placeholder="请选择课程分类" style="width:100%;">
+                      <el-option
+                        v-for="item in categoryList"
+                        :key="item.id"
+                        :label="item.cate_name"
+                        :value="item.id">
+                      </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="是否免费">
+                  <el-switch
+                    v-model="form.course_type"
+                    active-color="#13ce66">
+                  </el-switch>
                 </el-form-item>
                 <el-form-item label="课程价格(元)">
                     <el-input v-model.number="form.price"></el-input>
@@ -175,7 +212,7 @@
 </template>
 
 <script>
-    import { apiCourseList, apiAddCourse, apiDeleteCourse, apiCourseDetail, apiCourseUpdate } from '@/service'
+    import { apiCourseList, apiAddCourse, apiDeleteCourse, apiCourseDetail, apiCourseUpdate,apiAccountCategory } from '@/service'
     export default {
         data() {
             return {
@@ -202,13 +239,17 @@
                     course_share_money: 0,
                     course_lecturer: '',
                     course_film: '',
-                    course_img: ''
+                    course_img: '',
+                    course_category: '',
+                    course_type: false
                 },
-                updateId: ''
+                updateId: '',
+                categoryList: []
             }
         },
         created() {
-           this.getData();
+           this.getData()
+           this.getCategoryList()
         },
         computed: {
             token(){
@@ -219,7 +260,7 @@
         },
         methods: {
             handleUploadSuccess(res, file) {
-              console.log('img',res)
+              // console.log('img',res)
               if (res.code == 200) {
                 this.$message.success('上传成功')
                 this.form.course_img = res.data.url
@@ -240,6 +281,13 @@
             },
             checkImage(url){
               window.open(url)
+            },
+            getCategoryList() {
+              apiAccountCategory()
+              .then((res) => {
+                console.log('category',res)
+                this.categoryList = res.data
+              })
             },
             // 分页导航
             handleCurrentChange(val) {
@@ -271,6 +319,8 @@
               this.form.price = row.course_ticket_price
               this.form.course_share_money = row.course_share_money
               this.form.course_lecturer = row.course_lecturer
+              this.form.course_category = row.course_category
+              this.form.course_type = row.course_type == 1 ? true:false
               this.form.course_img = row.course_img
               this.form.course_film = row.course_film
               this.imgList = [{
@@ -322,10 +372,11 @@
                  course_film: this.form.course_film,
                  course_img: this.form.course_img,
                  course_ticket_price: this.form.price,
-                 course_type: 2,
+                 course_type: this.form.course_type ? 1: 2,
                  course_lecturer: this.form.course_lecturer,
                  course_share_money: this.form.course_share_money,
-                 course_introduce: this.form.remark
+                 course_introduce: this.form.remark,
+                 course_category: this.form.course_category
                }
                apiCourseUpdate(data)
                .then((res) => {
@@ -341,6 +392,15 @@
             addCourse(){ // 添加课程
               this.dialogAdd = true
               this.updateId = ''
+              this.form.remark = ''
+              this.form.name = ''
+              this.form.price = ''
+              this.form.course_share_money = ''
+              this.form.course_lecturer = ''
+              this.form.course_img = ''
+              this.form.course_film = ''
+              this.imgList = []
+              this.fileList = []
             },
             saveCourse() {
               const data = {
@@ -348,10 +408,11 @@
                  course_film: this.form.course_film,
                  course_img: this.form.course_img,
                  course_ticket_price: this.form.price,
-                 course_type: 2,
+                 course_type: this.form.course_type ? 1: 2,
                  course_lecturer: this.form.course_lecturer,
                  course_share_money: this.form.course_share_money,
-                 course_introduce: this.form.remark
+                 course_introduce: this.form.remark,
+                 course_category: this.form.course_category
                }
                apiAddCourse(data)
                .then((res) => {
